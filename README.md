@@ -47,6 +47,7 @@ In educational institutions, managing curriculum activities, tracking co-curricu
 ```text
 java project/
 ├── .gitignore
+├── mvnw / mvnw.cmd
 ├── pom.xml
 ├── README.md
 └── src/
@@ -54,20 +55,41 @@ java project/
     │   ├── java/
     │   │   └── com/smartcurriculum/portal/
     │   │       ├── SmartCurriculumPortalApplication.java
-    │   │       ├── controller/
-    │   │       │   └── HomeController.java
-    │   │       ├── entity/        # (Added in upcoming days)
-    │   │       ├── repository/    # (Added in upcoming days)
-    │   │       └── service/       # (Added in upcoming days)
+    │   │       ├── controller/        # REST & Web endpoints (HomeController)
+    │   │       ├── service/           # Business logic interfaces
+    │   │       │   └── impl/          # Business logic implementations
+    │   │       ├── repository/        # Spring Data JPA repositories
+    │   │       ├── entity/            # JPA entities (Student, Faculty, Activity, Attendance)
+    │   │       ├── dto/               # Data Transfer Objects & ApiResponse wrapper
+    │   │       └── exception/         # Custom exceptions & GlobalExceptionHandler
     │   └── resources/
     │       ├── application.properties
-    │       ├── static/            # Frontend CSS, JS, Images
-    │       └── templates/         # HTML Views
+    │       ├── static/                # Static assets (css/style.css, js/app.js, images)
+    │       └── templates/             # HTML Views (index.html)
     └── test/
         └── java/
             └── com/smartcurriculum/portal/
                 └── SmartCurriculumPortalApplicationTests.java
 ```
+
+---
+
+## 🏛️ Layered Architecture Overview
+
+The application follows the enterprise Spring Boot layered architecture:
+
+1. **Controller Layer (`com.smartcurriculum.portal.controller`)**:
+   - Handles incoming HTTP requests, performs parameter validation, and produces JSON responses or views.
+2. **Service Layer (`com.smartcurriculum.portal.service` & `impl`)**:
+   - Encapsulates business logic, data validation, and manages transaction boundaries.
+3. **Repository Layer (`com.smartcurriculum.portal.repository`)**:
+   - Data access abstraction leveraging Spring Data JPA (`JpaRepository`) for database CRUD operations.
+4. **Entity / Domain Layer (`com.smartcurriculum.portal.entity`)**:
+   - Object-relational mapping (ORM) entities mapped directly to MySQL database tables.
+5. **DTO Layer (`com.smartcurriculum.portal.dto`)**:
+   - Standardized `ApiResponse<T>` wrapper and decoupled request/response data carriers.
+6. **Exception Layer (`com.smartcurriculum.portal.exception`)**:
+   - Global exception handling (`@RestControllerAdvice`) delivering unified, client-friendly error structures.
 
 ---
 
@@ -87,22 +109,23 @@ java project/
    cd Smart-Curriculum-Activity-Attendance-Web-Portal-
    ```
 
-2. **Run using Maven**:
+2. **Run using Maven Wrapper**:
    ```powershell
-   mvn spring-boot:run
+   .\mvnw.cmd spring-boot:run
    ```
    *Or open and run `SmartCurriculumPortalApplication.java` from your IDE.*
 
 3. **Open the browser**:
    Visit [http://localhost:8080](http://localhost:8080) to verify that the portal server is running.
+   Check [http://localhost:8080/api/status](http://localhost:8080/api/status) to view the API health and architecture status.
 
 ---
 
 ## 📅 20-Day Development Roadmap
 
 * **Day 1**: Software setup and project initialization. *(Completed)*
-* **Day 2**: GitHub repository setup and local repository connection. *(In Progress)*
-* **Day 3**: Spring Boot layered package structure setup.
+* **Day 2**: GitHub repository setup and local repository connection. *(Completed)*
+* **Day 3**: Spring Boot layered package structure setup. *(Completed)*
 * **Day 4**: MySQL database configuration and connection setup.
 * **Day 5**: Create Student entity and database mapping.
 * **Day 6**: Create Faculty entity and database mapping.
