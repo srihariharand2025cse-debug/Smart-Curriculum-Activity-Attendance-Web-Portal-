@@ -98,8 +98,22 @@ The application follows the enterprise Spring Boot layered architecture:
 ### Prerequisites
 * **Java Development Kit (JDK 21+)**
 * **Git**
-* **MySQL Server** (will be configured in Day 4)
+* **MySQL Server (8.0+)**
 * **VS Code** / IntelliJ IDEA / Eclipse
+
+### Database Setup (Day 4)
+
+1. Ensure MySQL Server is running locally on port `3306`.
+2. Initialize the database using the provided SQL script:
+   ```bash
+   mysql -u root -p < src/main/resources/database_setup.sql
+   ```
+   *(Or create it in MySQL Workbench: `CREATE DATABASE IF NOT EXISTS smart_curriculum_db;`)*
+3. If your MySQL credentials differ from `root` / `root`, set environment variables or edit `application.properties`:
+   ```powershell
+   $env:DB_USERNAME = "your_username"
+   $env:DB_PASSWORD = "your_password"
+   ```
 
 ### Running the Application
 
@@ -116,8 +130,9 @@ The application follows the enterprise Spring Boot layered architecture:
    *Or open and run `SmartCurriculumPortalApplication.java` from your IDE.*
 
 3. **Open the browser**:
-   Visit [http://localhost:8080](http://localhost:8080) to verify that the portal server is running.
-   Check [http://localhost:8080/api/status](http://localhost:8080/api/status) to view the API health and architecture status.
+   - Web Portal UI: [http://localhost:8080](http://localhost:8080)
+   - API Status: [http://localhost:8080/api/status](http://localhost:8080/api/status)
+   - Database Connectivity Status: [http://localhost:8080/api/db-status](http://localhost:8080/api/db-status)
 
 ---
 
@@ -126,7 +141,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 1**: Software setup and project initialization. *(Completed)*
 * **Day 2**: GitHub repository setup and local repository connection. *(Completed)*
 * **Day 3**: Spring Boot layered package structure setup. *(Completed)*
-* **Day 4**: MySQL database configuration and connection setup.
+* **Day 4**: MySQL database configuration and connection setup. *(Completed)*
 * **Day 5**: Create Student entity and database mapping.
 * **Day 6**: Create Faculty entity and database mapping.
 * **Day 7**: Create Activity entity and database mapping.

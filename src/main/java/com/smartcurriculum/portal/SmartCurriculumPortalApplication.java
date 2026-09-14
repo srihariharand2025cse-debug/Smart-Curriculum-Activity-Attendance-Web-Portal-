@@ -2,14 +2,12 @@ package com.smartcurriculum.portal;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
  * Main Application Class for Smart Curriculum Activity & Attendance Web Portal.
- * Note: DataSourceAutoConfiguration is excluded temporarily for Day 1-3
- * so the application runs before configuring MySQL on Day 4.
+ * Day 4: MySQL Database Configuration & Connection Setup enabled.
  */
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
 public class SmartCurriculumPortalApplication {
 
     public static void main(String[] args) {
