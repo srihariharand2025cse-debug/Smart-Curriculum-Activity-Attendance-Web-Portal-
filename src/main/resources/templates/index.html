@@ -3,24 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Curriculum Activity & Attendance Portal</title>
+    <title>Smart Curriculum Activity & Attendance Portal - Day 5</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div style="max-width: 800px; margin: 60px auto; padding: 30px; background: rgba(255,255,255,0.06); border-radius: 16px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.37);">
-        <h1 style="color: #60a5fa; margin-bottom: 12px;">Smart Curriculum Activity & Attendance Web Portal</h1>
-        <p style="color: #cbd5e1; margin-bottom: 24px; font-size: 1.1rem;">Day 4: MySQL Database Configuration & Connection Setup Complete</p>
-        <div style="background: rgba(0,0,0,0.25); padding: 16px; border-radius: 8px; font-family: monospace; color: #a7f3d0; line-height: 1.8;">
-            ✓ Entity Layer (Persistence Models)<br>
-            ✓ Repository Layer (Spring Data JPA)<br>
-            ✓ Service Layer (Business Logic Interfaces & Implementations)<br>
-            ✓ Controller Layer (REST Endpoints)<br>
-            ✓ DTO Layer (Standardized API Responses)<br>
-            ✓ Exception Layer (Centralized Error Handling)<br>
-            ✓ Database Layer (MySQL DataSource, HikariCP Connection Pool & Hibernate JPA)
-        </div>
-        <div style="margin-top: 20px; padding: 12px 16px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; color: #93c5fd; font-size: 0.95rem;">
-            📌 <strong>Next Milestone:</strong> Day 5 — Create Student Entity and Database Mapping
+    <div class="container">
+        <div class="header-card">
+            <span class="badge">✓ Day 5 Milestone Completed</span>
+            <h1 class="portal-title">Smart Curriculum Activity & Attendance Web Portal</h1>
+            <p class="portal-subtitle">Day 5: Student Entity & Database Mapping Architecture</p>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Mapped Entity</div>
+                    <div class="stat-value">Student.java</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Database Table</div>
+                    <div class="stat-value">students</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Repository</div>
+                    <div class="stat-value">StudentRepository</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Constraints</div>
+                    <div class="stat-value">UK (Roll, Email)</div>
+                </div>
+            </div>
+
+            <div class="status-box">
+                ✓ Day 1: Software setup & Spring Boot project initialization<br>
+                ✓ Day 2: GitHub repository connection & tracking<br>
+                ✓ Day 3: Enterprise layered package structure (controller, service, repo, entity, dto, exception)<br>
+                ✓ Day 4: MySQL database connection & HikariCP pool configuration<br>
+                ✓ Day 5: Student JPA Entity, ORM relational mapping & StudentRepository query methods
+            </div>
+
+            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📋 Student Entity Database Schema</h2>
+            <div class="schema-table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column Name</th>
+                            <th>JPA Field</th>
+                            <th>Data Type</th>
+                            <th>Constraints / Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>Long id</td>
+                            <td><span class="chip-type">BIGINT</span></td>
+                            <td><span class="chip-constraint">PRIMARY KEY, AUTO_INCREMENT</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>roll_number</code></td>
+                            <td>String rollNumber</td>
+                            <td><span class="chip-type">VARCHAR(50)</span></td>
+                            <td><span class="chip-constraint">NOT NULL, UNIQUE, INDEXED</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>first_name</code></td>
+                            <td>String firstName</td>
+                            <td><span class="chip-type">VARCHAR(100)</span></td>
+                            <td><span class="chip-constraint">NOT NULL</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>last_name</code></td>
+                            <td>String lastName</td>
+                            <td><span class="chip-type">VARCHAR(100)</span></td>
+                            <td>Nullable</td>
+                        </tr>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>String email</td>
+                            <td><span class="chip-type">VARCHAR(150)</span></td>
+                            <td><span class="chip-constraint">NOT NULL, UNIQUE</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>department</code></td>
+                            <td>String department</td>
+                            <td><span class="chip-type">VARCHAR(100)</span></td>
+                            <td><span class="chip-constraint">NOT NULL, INDEXED</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>year_of_study</code></td>
+                            <td>Integer yearOfStudy</td>
+                            <td><span class="chip-type">INT</span></td>
+                            <td><span class="chip-constraint">NOT NULL</span> (1, 2, 3, 4)</td>
+                        </tr>
+                        <tr>
+                            <td><code>semester</code></td>
+                            <td>Integer semester</td>
+                            <td><span class="chip-type">INT</span></td>
+                            <td><span class="chip-constraint">NOT NULL</span> (1 - 8)</td>
+                        </tr>
+                        <tr>
+                            <td><code>section</code></td>
+                            <td>String section</td>
+                            <td><span class="chip-type">VARCHAR(10)</span></td>
+                            <td>e.g., "A", "B"</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>String status</td>
+                            <td><span class="chip-type">VARCHAR(30)</span></td>
+                            <td>DEFAULT 'ACTIVE'</td>
+                        </tr>
+                        <tr>
+                            <td><code>created_at</code> / <code>updated_at</code></td>
+                            <td>LocalDateTime</td>
+                            <td><span class="chip-type">TIMESTAMP</span></td>
+                            <td>Auditing via @PrePersist / @PreUpdate</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="next-step-box">
+                <div>
+                    <strong>Upcoming Roadmap:</strong> Day 6 — Create Faculty Entity & Database Mapping
+                </div>
+                <span class="badge badge-next">Next Step</span>
+            </div>
+
+            <div class="api-links">
+                <a class="api-link-btn" href="/api/status" target="_blank">🌐 System Status API</a>
+                <a class="api-link-btn" href="/api/db-status" target="_blank">🗄️ Database Health API</a>
+                <a class="api-link-btn" href="/api/students/summary" target="_blank">🎓 Student Entity Summary API</a>
+            </div>
         </div>
     </div>
     <script src="/js/app.js"></script>

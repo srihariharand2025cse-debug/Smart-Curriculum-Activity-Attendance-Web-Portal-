@@ -142,7 +142,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 2**: GitHub repository setup and local repository connection. *(Completed)*
 * **Day 3**: Spring Boot layered package structure setup. *(Completed)*
 * **Day 4**: MySQL database configuration and connection setup. *(Completed)*
-* **Day 5**: Create Student entity and database mapping.
+* **Day 5**: Create Student entity and database mapping. *(Completed)*
 * **Day 6**: Create Faculty entity and database mapping.
 * **Day 7**: Create Activity entity and database mapping.
 * **Day 8**: Create Attendance entity and database mapping.

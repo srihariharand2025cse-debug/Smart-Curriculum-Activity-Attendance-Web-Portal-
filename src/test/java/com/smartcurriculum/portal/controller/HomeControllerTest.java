@@ -23,7 +23,7 @@ class HomeControllerTest {
     void shouldReturnWelcomeMessageOnRootEndpoint() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Day 4 MySQL Database Configuration is Complete")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Day 5 Student Entity and Database Mapping is Complete")));
     }
 
     @Test
@@ -33,9 +33,10 @@ class HomeControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Portal API is running smoothly"))
                 .andExpect(jsonPath("$.data.status").value("UP"))
-                .andExpect(jsonPath("$.data.currentMilestone").value("Day 4: MySQL Database Configuration & Connection Setup"))
+                .andExpect(jsonPath("$.data.currentMilestone").value("Day 5: Create Student Entity and Database Mapping"))
                 .andExpect(jsonPath("$.data.databaseConfigured").value(true))
-                .andExpect(jsonPath("$.data.nextMilestone").value("Day 5: Create Student Entity and Database Mapping"));
+                .andExpect(jsonPath("$.data.studentEntityMapped").value(true))
+                .andExpect(jsonPath("$.data.nextMilestone").value("Day 6: Create Faculty Entity and Database Mapping"));
     }
 
     @Test
