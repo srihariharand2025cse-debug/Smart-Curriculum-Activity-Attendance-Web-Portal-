@@ -3,44 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Curriculum Activity & Attendance Portal - Day 5</title>
+    <title>Smart Curriculum Activity & Attendance Portal - Day 7</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
         <div class="header-card">
-            <span class="badge">✓ Day 5 Milestone Completed</span>
+            <span class="badge">✓ Day 7 Milestone Completed</span>
             <h1 class="portal-title">Smart Curriculum Activity & Attendance Web Portal</h1>
-            <p class="portal-subtitle">Day 5: Student Entity & Database Mapping Architecture</p>
+            <p class="portal-subtitle">Day 7: Activity Entity & Database Mapping Architecture</p>
 
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-label">Mapped Entity</div>
-                    <div class="stat-value">Student.java</div>
+                    <div class="stat-value">Activity.java</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Database Table</div>
-                    <div class="stat-value">students</div>
+                    <div class="stat-value">activities</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Repository</div>
-                    <div class="stat-value">StudentRepository</div>
+                    <div class="stat-value">ActivityRepository</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Constraints</div>
-                    <div class="stat-value">UK (Roll, Email)</div>
+                    <div class="stat-label">Relationships</div>
+                    <div class="stat-value">ManyToOne (Faculty)</div>
                 </div>
             </div>
 
             <div class="status-box">
                 ✓ Day 1: Software setup & Spring Boot project initialization<br>
                 ✓ Day 2: GitHub repository connection & tracking<br>
-                ✓ Day 3: Enterprise layered package structure (controller, service, repo, entity, dto, exception)<br>
+                ✓ Day 3: Enterprise layered package structure<br>
                 ✓ Day 4: MySQL database connection & HikariCP pool configuration<br>
-                ✓ Day 5: Student JPA Entity, ORM relational mapping & StudentRepository query methods
+                ✓ Day 5: Student JPA Entity, ORM relational mapping & StudentRepository<br>
+                ✓ Day 6: Faculty JPA Entity, ORM relational mapping & FacultyRepository<br>
+                ✓ Day 7: Activity JPA Entity, ORM relational mapping & ActivityRepository
             </div>
 
-            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📋 Student Entity Database Schema</h2>
+            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📋 Activity Entity Database Schema</h2>
             <div class="schema-table-wrapper">
                 <table class="schema-table">
                     <thead>
@@ -59,28 +61,28 @@
                             <td><span class="chip-constraint">PRIMARY KEY, AUTO_INCREMENT</span></td>
                         </tr>
                         <tr>
-                            <td><code>roll_number</code></td>
-                            <td>String rollNumber</td>
+                            <td><code>activity_code</code></td>
+                            <td>String activityCode</td>
                             <td><span class="chip-type">VARCHAR(50)</span></td>
                             <td><span class="chip-constraint">NOT NULL, UNIQUE, INDEXED</span></td>
                         </tr>
                         <tr>
-                            <td><code>first_name</code></td>
-                            <td>String firstName</td>
-                            <td><span class="chip-type">VARCHAR(100)</span></td>
+                            <td><code>title</code></td>
+                            <td>String title</td>
+                            <td><span class="chip-type">VARCHAR(150)</span></td>
                             <td><span class="chip-constraint">NOT NULL</span></td>
                         </tr>
                         <tr>
-                            <td><code>last_name</code></td>
-                            <td>String lastName</td>
-                            <td><span class="chip-type">VARCHAR(100)</span></td>
-                            <td>Nullable</td>
+                            <td><code>description</code></td>
+                            <td>String description</td>
+                            <td><span class="chip-type">VARCHAR(1000)</span></td>
+                            <td>Nullable (overview & syllabus)</td>
                         </tr>
                         <tr>
-                            <td><code>email</code></td>
-                            <td>String email</td>
-                            <td><span class="chip-type">VARCHAR(150)</span></td>
-                            <td><span class="chip-constraint">NOT NULL, UNIQUE</span></td>
+                            <td><code>activity_type</code></td>
+                            <td>String activityType</td>
+                            <td><span class="chip-type">VARCHAR(50)</span></td>
+                            <td><span class="chip-constraint">NOT NULL, INDEXED</span> (LAB, LECTURE, WORKSHOP...)</td>
                         </tr>
                         <tr>
                             <td><code>department</code></td>
@@ -89,28 +91,40 @@
                             <td><span class="chip-constraint">NOT NULL, INDEXED</span></td>
                         </tr>
                         <tr>
-                            <td><code>year_of_study</code></td>
-                            <td>Integer yearOfStudy</td>
-                            <td><span class="chip-type">INT</span></td>
-                            <td><span class="chip-constraint">NOT NULL</span> (1, 2, 3, 4)</td>
+                            <td><code>academic_year</code></td>
+                            <td>String academicYear</td>
+                            <td><span class="chip-type">VARCHAR(20)</span></td>
+                            <td>e.g. '2025-2026'</td>
                         </tr>
                         <tr>
                             <td><code>semester</code></td>
                             <td>Integer semester</td>
                             <td><span class="chip-type">INT</span></td>
-                            <td><span class="chip-constraint">NOT NULL</span> (1 - 8)</td>
+                            <td>Academic semester (1 to 8)</td>
                         </tr>
                         <tr>
-                            <td><code>section</code></td>
-                            <td>String section</td>
-                            <td><span class="chip-type">VARCHAR(10)</span></td>
-                            <td>e.g., "A", "B"</td>
+                            <td><code>credits</code></td>
+                            <td>Integer credits</td>
+                            <td><span class="chip-type">INT</span></td>
+                            <td>Credits allocated (e.g. 1-4)</td>
+                        </tr>
+                        <tr>
+                            <td><code>venue</code></td>
+                            <td>String venue</td>
+                            <td><span class="chip-type">VARCHAR(150)</span></td>
+                            <td>Lab / Hall location</td>
+                        </tr>
+                        <tr>
+                            <td><code>faculty_id</code></td>
+                            <td>Faculty faculty</td>
+                            <td><span class="chip-type">BIGINT (FK)</span></td>
+                            <td><span class="chip-constraint">FOREIGN KEY -&gt; faculty(id)</span></td>
                         </tr>
                         <tr>
                             <td><code>status</code></td>
                             <td>String status</td>
                             <td><span class="chip-type">VARCHAR(30)</span></td>
-                            <td>DEFAULT 'ACTIVE'</td>
+                            <td>DEFAULT 'ACTIVE', INDEXED</td>
                         </tr>
                         <tr>
                             <td><code>created_at</code> / <code>updated_at</code></td>
@@ -124,7 +138,7 @@
 
             <div class="next-step-box">
                 <div>
-                    <strong>Upcoming Roadmap:</strong> Day 6 — Create Faculty Entity & Database Mapping
+                    <strong>Upcoming Roadmap:</strong> Day 8 — Create Attendance Entity & Database Mapping
                 </div>
                 <span class="badge badge-next">Next Step</span>
             </div>
@@ -132,7 +146,9 @@
             <div class="api-links">
                 <a class="api-link-btn" href="/api/status" target="_blank">🌐 System Status API</a>
                 <a class="api-link-btn" href="/api/db-status" target="_blank">🗄️ Database Health API</a>
-                <a class="api-link-btn" href="/api/students/summary" target="_blank">🎓 Student Entity Summary API</a>
+                <a class="api-link-btn" href="/api/students/summary" target="_blank">🎓 Student Summary API</a>
+                <a class="api-link-btn" href="/api/faculty/summary" target="_blank">👨‍🏫 Faculty Summary API</a>
+                <a class="api-link-btn" href="/api/activities/summary" target="_blank">📅 Activity Summary API</a>
             </div>
         </div>
     </div>

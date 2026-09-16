@@ -7,10 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -23,7 +24,7 @@ class HomeControllerTest {
     void shouldReturnWelcomeMessageOnRootEndpoint() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Day 5 Student Entity and Database Mapping is Complete")));
+                .andExpect(content().string(containsString("Day 7 Activity Entity and Database Mapping is Complete")));
     }
 
     @Test
@@ -33,10 +34,12 @@ class HomeControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Portal API is running smoothly"))
                 .andExpect(jsonPath("$.data.status").value("UP"))
-                .andExpect(jsonPath("$.data.currentMilestone").value("Day 5: Create Student Entity and Database Mapping"))
+                .andExpect(jsonPath("$.data.currentMilestone").value("Day 7: Create Activity Entity and Database Mapping"))
                 .andExpect(jsonPath("$.data.databaseConfigured").value(true))
                 .andExpect(jsonPath("$.data.studentEntityMapped").value(true))
-                .andExpect(jsonPath("$.data.nextMilestone").value("Day 6: Create Faculty Entity and Database Mapping"));
+                .andExpect(jsonPath("$.data.facultyEntityMapped").value(true))
+                .andExpect(jsonPath("$.data.activityEntityMapped").value(true))
+                .andExpect(jsonPath("$.data.nextMilestone").value("Day 8: Create Attendance Entity and Database Mapping"));
     }
 
     @Test
@@ -45,5 +48,33 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.connected").value(true));
+    }
+
+    @Test
+    void shouldReturnStudentSummaryOnSummaryEndpoint() throws Exception {
+        mockMvc.perform(get("/api/students/summary").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.entityMapped").value(true))
+                .andExpect(jsonPath("$.data.tableName").value("students"));
+    }
+
+    @Test
+    void shouldReturnFacultySummaryOnSummaryEndpoint() throws Exception {
+        mockMvc.perform(get("/api/faculty/summary").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.entityMapped").value(true))
+                .andExpect(jsonPath("$.data.tableName").value("faculty"));
+    }
+
+    @Test
+    void shouldReturnActivitySummaryOnSummaryEndpoint() throws Exception {
+        mockMvc.perform(get("/api/activities/summary").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.entityMapped").value(true))
+                .andExpect(jsonPath("$.data.entityClass").value("com.smartcurriculum.portal.entity.Activity"))
+                .andExpect(jsonPath("$.data.tableName").value("activities"));
     }
 }

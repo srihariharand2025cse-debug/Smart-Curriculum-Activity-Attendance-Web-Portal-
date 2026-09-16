@@ -1,6 +1,8 @@
 package com.smartcurriculum.portal.controller;
 
 import com.smartcurriculum.portal.dto.ApiResponse;
+import com.smartcurriculum.portal.repository.ActivityRepository;
+import com.smartcurriculum.portal.repository.FacultyRepository;
 import com.smartcurriculum.portal.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 /**
  * Controller to verify portal status, health, database connection,
- * and Day 5 Student Entity & Database Mapping readiness.
+ * Student Entity (Day 5), Faculty Entity (Day 6), and Activity Entity (Day 7) mapping readiness.
  */
 @RestController
 public class HomeController {
@@ -26,9 +28,15 @@ public class HomeController {
     @Autowired(required = false)
     private StudentRepository studentRepository;
 
+    @Autowired(required = false)
+    private FacultyRepository facultyRepository;
+
+    @Autowired(required = false)
+    private ActivityRepository activityRepository;
+
     @GetMapping("/")
     public String home() {
-        return "Welcome to Smart Curriculum Activity & Attendance Web Portal! Day 5 Student Entity and Database Mapping is Complete.";
+        return "Welcome to Smart Curriculum Activity & Attendance Web Portal! Day 7 Activity Entity and Database Mapping is Complete.";
     }
 
     @GetMapping("/api/status")
@@ -36,20 +44,24 @@ public class HomeController {
         Map<String, Object> statusData = new LinkedHashMap<>();
         statusData.put("status", "UP");
         statusData.put("project", "Smart Curriculum Activity & Attendance Web Portal");
-        statusData.put("currentMilestone", "Day 5: Create Student Entity and Database Mapping");
+        statusData.put("currentMilestone", "Day 7: Create Activity Entity and Database Mapping");
         statusData.put("layersConfigured", new String[]{
                 "controller",
                 "service (interface & impl)",
-                "repository (StudentRepository)",
-                "entity (Student)",
+                "repository (StudentRepository, FacultyRepository, ActivityRepository)",
+                "entity (Student, Faculty, Activity)",
                 "dto",
                 "exception",
                 "database (MySQL DataSource & Hibernate JPA)"
         });
         statusData.put("databaseConfigured", true);
         statusData.put("studentEntityMapped", true);
+        statusData.put("facultyEntityMapped", true);
+        statusData.put("activityEntityMapped", true);
         statusData.put("totalStudents", studentRepository != null ? studentRepository.count() : 0L);
-        statusData.put("nextMilestone", "Day 6: Create Faculty Entity and Database Mapping");
+        statusData.put("totalFaculty", facultyRepository != null ? facultyRepository.count() : 0L);
+        statusData.put("totalActivities", activityRepository != null ? activityRepository.count() : 0L);
+        statusData.put("nextMilestone", "Day 8: Create Attendance Entity and Database Mapping");
 
         return ResponseEntity.ok(ApiResponse.success("Portal API is running smoothly", statusData));
     }
@@ -90,5 +102,29 @@ public class HomeController {
         summary.put("entityClass", "com.smartcurriculum.portal.entity.Student");
         summary.put("tableName", "students");
         return ResponseEntity.ok(ApiResponse.success("Student entity and database mapping are active", summary));
+    }
+
+    @GetMapping("/api/faculty/summary")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getFacultySummary() {
+        Map<String, Object> summary = new LinkedHashMap<>();
+        boolean isAvailable = (facultyRepository != null);
+        summary.put("entityMapped", true);
+        summary.put("repositoryActive", isAvailable);
+        summary.put("totalFaculty", isAvailable ? facultyRepository.count() : 0L);
+        summary.put("entityClass", "com.smartcurriculum.portal.entity.Faculty");
+        summary.put("tableName", "faculty");
+        return ResponseEntity.ok(ApiResponse.success("Faculty entity and database mapping are active", summary));
+    }
+
+    @GetMapping("/api/activities/summary")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getActivitySummary() {
+        Map<String, Object> summary = new LinkedHashMap<>();
+        boolean isAvailable = (activityRepository != null);
+        summary.put("entityMapped", true);
+        summary.put("repositoryActive", isAvailable);
+        summary.put("totalActivities", isAvailable ? activityRepository.count() : 0L);
+        summary.put("entityClass", "com.smartcurriculum.portal.entity.Activity");
+        summary.put("tableName", "activities");
+        return ResponseEntity.ok(ApiResponse.success("Activity entity and database mapping are active", summary));
     }
 }
