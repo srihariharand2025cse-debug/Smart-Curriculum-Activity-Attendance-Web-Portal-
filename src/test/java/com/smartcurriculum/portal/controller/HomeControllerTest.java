@@ -24,7 +24,7 @@ class HomeControllerTest {
     void shouldReturnWelcomeMessageOnRootEndpoint() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Day 7 Activity Entity and Database Mapping is Complete")));
+                .andExpect(content().string(containsString("Day 8 Attendance Entity and Database Mapping is Complete")));
     }
 
     @Test
@@ -34,12 +34,13 @@ class HomeControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Portal API is running smoothly"))
                 .andExpect(jsonPath("$.data.status").value("UP"))
-                .andExpect(jsonPath("$.data.currentMilestone").value("Day 7: Create Activity Entity and Database Mapping"))
+                .andExpect(jsonPath("$.data.currentMilestone").value("Day 8: Create Attendance Entity and Database Mapping"))
                 .andExpect(jsonPath("$.data.databaseConfigured").value(true))
                 .andExpect(jsonPath("$.data.studentEntityMapped").value(true))
                 .andExpect(jsonPath("$.data.facultyEntityMapped").value(true))
                 .andExpect(jsonPath("$.data.activityEntityMapped").value(true))
-                .andExpect(jsonPath("$.data.nextMilestone").value("Day 8: Create Attendance Entity and Database Mapping"));
+                .andExpect(jsonPath("$.data.attendanceEntityMapped").value(true))
+                .andExpect(jsonPath("$.data.nextMilestone").value("Day 9: Implement Student CRUD operations (Repository, Service, Controller)"));
     }
 
     @Test
@@ -76,5 +77,15 @@ class HomeControllerTest {
                 .andExpect(jsonPath("$.data.entityMapped").value(true))
                 .andExpect(jsonPath("$.data.entityClass").value("com.smartcurriculum.portal.entity.Activity"))
                 .andExpect(jsonPath("$.data.tableName").value("activities"));
+    }
+
+    @Test
+    void shouldReturnAttendanceSummaryOnSummaryEndpoint() throws Exception {
+        mockMvc.perform(get("/api/attendance/summary").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.entityMapped").value(true))
+                .andExpect(jsonPath("$.data.entityClass").value("com.smartcurriculum.portal.entity.Attendance"))
+                .andExpect(jsonPath("$.data.tableName").value("attendance"));
     }
 }

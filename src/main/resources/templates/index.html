@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Curriculum Activity & Attendance Portal - Day 7</title>
+    <title>Smart Curriculum Activity & Attendance Portal - Day 8</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
         <div class="header-card">
-            <span class="badge">✓ Day 7 Milestone Completed</span>
+            <span class="badge">✓ Day 8 Milestone Completed</span>
             <h1 class="portal-title">Smart Curriculum Activity & Attendance Web Portal</h1>
-            <p class="portal-subtitle">Day 7: Activity Entity & Database Mapping Architecture</p>
+            <p class="portal-subtitle">Day 8: Attendance Entity & Database Mapping Architecture</p>
 
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-label">Mapped Entity</div>
-                    <div class="stat-value">Activity.java</div>
+                    <div class="stat-value">Attendance.java</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Database Table</div>
-                    <div class="stat-value">activities</div>
+                    <div class="stat-value">attendance</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Repository</div>
-                    <div class="stat-value">ActivityRepository</div>
+                    <div class="stat-value">AttendanceRepository</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-label">Relationships</div>
-                    <div class="stat-value">ManyToOne (Faculty)</div>
+                    <div class="stat-value">Student + Activity + Faculty</div>
                 </div>
             </div>
 
@@ -39,10 +39,11 @@
                 ✓ Day 4: MySQL database connection & HikariCP pool configuration<br>
                 ✓ Day 5: Student JPA Entity, ORM relational mapping & StudentRepository<br>
                 ✓ Day 6: Faculty JPA Entity, ORM relational mapping & FacultyRepository<br>
-                ✓ Day 7: Activity JPA Entity, ORM relational mapping & ActivityRepository
+                ✓ Day 7: Activity JPA Entity, ORM relational mapping & ActivityRepository<br>
+                ✓ Day 8: Attendance JPA Entity, ORM relational mapping & AttendanceRepository
             </div>
 
-            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📋 Activity Entity Database Schema</h2>
+            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📋 Attendance Entity Database Schema</h2>
             <div class="schema-table-wrapper">
                 <table class="schema-table">
                     <thead>
@@ -61,70 +62,46 @@
                             <td><span class="chip-constraint">PRIMARY KEY, AUTO_INCREMENT</span></td>
                         </tr>
                         <tr>
-                            <td><code>activity_code</code></td>
-                            <td>String activityCode</td>
-                            <td><span class="chip-type">VARCHAR(50)</span></td>
-                            <td><span class="chip-constraint">NOT NULL, UNIQUE, INDEXED</span></td>
+                            <td><code>student_id</code></td>
+                            <td>Student student</td>
+                            <td><span class="chip-type">BIGINT (FK)</span></td>
+                            <td><span class="chip-constraint">FOREIGN KEY -&gt; students(id), NOT NULL</span></td>
                         </tr>
                         <tr>
-                            <td><code>title</code></td>
-                            <td>String title</td>
-                            <td><span class="chip-type">VARCHAR(150)</span></td>
-                            <td><span class="chip-constraint">NOT NULL</span></td>
-                        </tr>
-                        <tr>
-                            <td><code>description</code></td>
-                            <td>String description</td>
-                            <td><span class="chip-type">VARCHAR(1000)</span></td>
-                            <td>Nullable (overview & syllabus)</td>
-                        </tr>
-                        <tr>
-                            <td><code>activity_type</code></td>
-                            <td>String activityType</td>
-                            <td><span class="chip-type">VARCHAR(50)</span></td>
-                            <td><span class="chip-constraint">NOT NULL, INDEXED</span> (LAB, LECTURE, WORKSHOP...)</td>
-                        </tr>
-                        <tr>
-                            <td><code>department</code></td>
-                            <td>String department</td>
-                            <td><span class="chip-type">VARCHAR(100)</span></td>
-                            <td><span class="chip-constraint">NOT NULL, INDEXED</span></td>
-                        </tr>
-                        <tr>
-                            <td><code>academic_year</code></td>
-                            <td>String academicYear</td>
-                            <td><span class="chip-type">VARCHAR(20)</span></td>
-                            <td>e.g. '2025-2026'</td>
-                        </tr>
-                        <tr>
-                            <td><code>semester</code></td>
-                            <td>Integer semester</td>
-                            <td><span class="chip-type">INT</span></td>
-                            <td>Academic semester (1 to 8)</td>
-                        </tr>
-                        <tr>
-                            <td><code>credits</code></td>
-                            <td>Integer credits</td>
-                            <td><span class="chip-type">INT</span></td>
-                            <td>Credits allocated (e.g. 1-4)</td>
-                        </tr>
-                        <tr>
-                            <td><code>venue</code></td>
-                            <td>String venue</td>
-                            <td><span class="chip-type">VARCHAR(150)</span></td>
-                            <td>Lab / Hall location</td>
+                            <td><code>activity_id</code></td>
+                            <td>Activity activity</td>
+                            <td><span class="chip-type">BIGINT (FK)</span></td>
+                            <td><span class="chip-constraint">FOREIGN KEY -&gt; activities(id), NOT NULL</span></td>
                         </tr>
                         <tr>
                             <td><code>faculty_id</code></td>
-                            <td>Faculty faculty</td>
+                            <td>Faculty markedByFaculty</td>
                             <td><span class="chip-type">BIGINT (FK)</span></td>
-                            <td><span class="chip-constraint">FOREIGN KEY -&gt; faculty(id)</span></td>
+                            <td>FOREIGN KEY -&gt; faculty(id), Nullable (approver/marker)</td>
+                        </tr>
+                        <tr>
+                            <td><code>attendance_date</code></td>
+                            <td>LocalDate attendanceDate</td>
+                            <td><span class="chip-type">DATE</span></td>
+                            <td><span class="chip-constraint">NOT NULL, INDEXED</span></td>
                         </tr>
                         <tr>
                             <td><code>status</code></td>
                             <td>String status</td>
                             <td><span class="chip-type">VARCHAR(30)</span></td>
-                            <td>DEFAULT 'ACTIVE', INDEXED</td>
+                            <td><span class="chip-constraint">NOT NULL, INDEXED</span> (PRESENT, ABSENT, LATE, ON_DUTY)</td>
+                        </tr>
+                        <tr>
+                            <td><code>session_slot</code></td>
+                            <td>String sessionSlot</td>
+                            <td><span class="chip-type">VARCHAR(50)</span></td>
+                            <td><span class="chip-constraint">NOT NULL, UNIQUE COMPONENT</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>remarks</code></td>
+                            <td>String remarks</td>
+                            <td><span class="chip-type">VARCHAR(500)</span></td>
+                            <td>Nullable (notes, leave reason, OD duty)</td>
                         </tr>
                         <tr>
                             <td><code>created_at</code> / <code>updated_at</code></td>
@@ -138,7 +115,7 @@
 
             <div class="next-step-box">
                 <div>
-                    <strong>Upcoming Roadmap:</strong> Day 8 — Create Attendance Entity & Database Mapping
+                    <strong>Upcoming Roadmap:</strong> Day 9 — Implement Student CRUD Operations (Repository, Service, Controller)
                 </div>
                 <span class="badge badge-next">Next Step</span>
             </div>
@@ -149,6 +126,7 @@
                 <a class="api-link-btn" href="/api/students/summary" target="_blank">🎓 Student Summary API</a>
                 <a class="api-link-btn" href="/api/faculty/summary" target="_blank">👨‍🏫 Faculty Summary API</a>
                 <a class="api-link-btn" href="/api/activities/summary" target="_blank">📅 Activity Summary API</a>
+                <a class="api-link-btn" href="/api/attendance/summary" target="_blank">📊 Attendance Summary API</a>
             </div>
         </div>
     </div>

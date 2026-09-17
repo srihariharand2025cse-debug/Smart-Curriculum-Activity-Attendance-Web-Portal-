@@ -101,7 +101,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **MySQL Server (8.0+)**
 * **VS Code** / IntelliJ IDEA / Eclipse
 
-### Database Setup (Day 5, 6 & 7)
+### Database Setup (Day 5, 6, 7 & 8)
 
 1. Ensure MySQL Server is running locally on port `3306`.
 2. Initialize the database using the provided SQL script:
@@ -136,6 +136,7 @@ The application follows the enterprise Spring Boot layered architecture:
    - Student Summary: [http://localhost:8080/api/students/summary](http://localhost:8080/api/students/summary)
    - Faculty Summary: [http://localhost:8080/api/faculty/summary](http://localhost:8080/api/faculty/summary)
    - Activity Summary: [http://localhost:8080/api/activities/summary](http://localhost:8080/api/activities/summary)
+   - Attendance Summary: [http://localhost:8080/api/attendance/summary](http://localhost:8080/api/attendance/summary)
 
 ---
 
@@ -148,7 +149,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 5**: Create Student entity and database mapping. *(Completed)*
 * **Day 6**: Create Faculty entity and database mapping. *(Completed)*
 * **Day 7**: Create Activity entity and database mapping. *(Completed)*
-* **Day 8**: Create Attendance entity and database mapping.
+* **Day 8**: Create Attendance entity and database mapping. *(Completed)*
 * **Day 9**: Implement Student CRUD operations (Repository, Service, Controller).
 * **Day 10**: Implement Faculty CRUD operations.
 * **Day 11**: Implement Curriculum Activity management APIs.

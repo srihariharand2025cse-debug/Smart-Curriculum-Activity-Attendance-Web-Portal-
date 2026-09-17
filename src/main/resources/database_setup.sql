@@ -1,6 +1,6 @@
 -- ===================================================================
 -- Smart Curriculum Activity & Attendance Web Portal
--- Day 5 + Day 6: MySQL Database Initialization, Student & Faculty Schema
+-- Day 5 - Day 8: MySQL Schema (Students, Faculty, Activities, Attendance)
 -- ===================================================================
 
 -- 1. Create database if it does not already exist
@@ -91,7 +91,32 @@ CREATE TABLE IF NOT EXISTS `activities` (
     INDEX `idx_activities_dept_sem` (`department`, `semester`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 6. Seed sample student records
+-- 6. Create attendance table (Day 8 Database Mapping)
+CREATE TABLE IF NOT EXISTS `attendance` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `student_id` BIGINT NOT NULL,
+    `activity_id` BIGINT NOT NULL,
+    `faculty_id` BIGINT NULL,
+    `attendance_date` DATE NOT NULL,
+    `status` VARCHAR(30) NOT NULL DEFAULT 'PRESENT',
+    `session_slot` VARCHAR(50) NOT NULL DEFAULT 'SESSION_1',
+    `remarks` VARCHAR(500) NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `uk_attendance_record` UNIQUE (`student_id`, `activity_id`, `attendance_date`, `session_slot`),
+    CONSTRAINT `fk_attendance_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_attendance_activity` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_attendance_faculty` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE SET NULL,
+    INDEX `idx_attendance_student_id` (`student_id`),
+    INDEX `idx_attendance_activity_id` (`activity_id`),
+    INDEX `idx_attendance_faculty_id` (`faculty_id`),
+    INDEX `idx_attendance_date` (`attendance_date`),
+    INDEX `idx_attendance_status` (`status`),
+    INDEX `idx_attendance_student_date` (`student_id`, `attendance_date`),
+    INDEX `idx_attendance_act_date` (`activity_id`, `attendance_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 7. Seed sample student records
 INSERT IGNORE INTO `students` (
     `roll_number`, `first_name`, `last_name`, `email`, `phone_number`,
     `department`, `year_of_study`, `semester`, `section`, `gender`, `status`
@@ -101,7 +126,7 @@ INSERT IGNORE INTO `students` (
 ('21ECE015', 'Rohan', 'Verma', 'rohan.verma@college.edu', '9876543212', 'Electronics and Communication', 2, 3, 'B', 'Male', 'ACTIVE'),
 ('21MECH030', 'Pooja', 'Sundaram', 'pooja.sundaram@college.edu', '9876543213', 'Mechanical Engineering', 4, 7, 'A', 'Female', 'ACTIVE');
 
--- 7. Seed sample faculty records
+-- 8. Seed sample faculty records
 INSERT IGNORE INTO `faculty` (
     `employee_id`, `first_name`, `last_name`, `email`, `phone_number`,
     `department`, `designation`, `specialization`, `qualification`, `experience_years`,
@@ -112,7 +137,7 @@ INSERT IGNORE INTO `faculty` (
 ('FAC003', 'Mr. Suresh', 'Babu', 'suresh.babu@college.edu', '9800000003', 'Electronics and Communication', 'Assistant Professor', 'VLSI Design', 'M.E Electronics', 5, 'Male', '2020-08-01', 'ACTIVE'),
 ('FAC004', 'Ms. Lakshmi', 'Priya', 'lakshmi.priya@college.edu', '9800000004', 'Mechanical Engineering', 'Assistant Professor', 'Thermal Engineering', 'M.E Mechanical', 3, 'Female', '2022-07-20', 'ACTIVE');
 
--- 8. Seed sample activity records
+-- 9. Seed sample activity records
 INSERT IGNORE INTO `activities` (
     `activity_code`, `title`, `description`, `activity_type`, `department`,
     `academic_year`, `semester`, `credits`, `venue`, `faculty_id`, `status`, `max_enrollment`
@@ -122,10 +147,23 @@ INSERT IGNORE INTO `activities` (
 ('ACT-EC301-LAB', 'VLSI Design & Digital Simulation', 'Hardware description language synthesis and FPGA verification session.', 'LAB', 'Electronics and Communication', '2025-2026', 3, 2, 'VLSI Centre', 3, 'ACTIVE', 50),
 ('ACT-ME701-SEM', 'Renewable Energy & Thermal Systems Workshop', 'Industry guest speaker workshop on solar photovoltaic and electric mobility.', 'WORKSHOP', 'Mechanical Engineering', '2025-2026', 7, 1, 'Auditorium B', 4, 'ACTIVE', 120);
 
--- 9. Verify database and schema status
+-- 10. Seed sample attendance records (Day 8 Mapping)
+INSERT IGNORE INTO `attendance` (
+    `student_id`, `activity_id`, `faculty_id`, `attendance_date`, `status`, `session_slot`, `remarks`
+) VALUES
+(1, 1, 2, '2026-09-10', 'PRESENT', 'SESSION_1', 'Attended DSA Lab on Binary Trees'),
+(2, 1, 2, '2026-09-10', 'PRESENT', 'SESSION_1', 'Attended DSA Lab on Binary Trees'),
+(1, 2, 1, '2026-09-11', 'PRESENT', 'SESSION_2', 'Attended AI lecture on A* Search'),
+(2, 2, 1, '2026-09-11', 'ABSENT', 'SESSION_2', 'Medical leave submitted'),
+(3, 3, 3, '2026-09-12', 'PRESENT', 'SESSION_1', 'Completed VLSI simulation module 1'),
+(4, 4, 4, '2026-09-15', 'ON_DUTY', 'SESSION_1', 'Representing college at Renewable Energy Summit');
+
+-- 11. Verify database and schema status
 SELECT
     (SELECT COUNT(*) FROM `students`) AS total_students,
     (SELECT COUNT(*) FROM `faculty`) AS total_faculty,
     (SELECT COUNT(*) FROM `activities`) AS total_activities,
-    'Day 7: Activity schema and data initialized successfully' AS status;
+    (SELECT COUNT(*) FROM `attendance`) AS total_attendance,
+    'Day 8: Attendance schema and data initialized successfully' AS status;
+
 
