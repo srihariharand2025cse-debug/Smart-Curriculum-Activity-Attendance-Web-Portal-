@@ -3,111 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Curriculum Activity & Attendance Portal - Day 8</title>
+    <title>Smart Curriculum Activity & Attendance Portal - Day 9</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
         <div class="header-card">
-            <span class="badge">✓ Day 8 Milestone Completed</span>
+            <span class="badge">✓ Day 9 Milestone Completed</span>
             <h1 class="portal-title">Smart Curriculum Activity & Attendance Web Portal</h1>
-            <p class="portal-subtitle">Day 8: Attendance Entity & Database Mapping Architecture</p>
+            <p class="portal-subtitle">Day 9: Student CRUD Operations (Repository, Service, Controller)</p>
 
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-label">Mapped Entity</div>
-                    <div class="stat-value">Attendance.java</div>
+                    <div class="stat-label">REST Controller</div>
+                    <div class="stat-value">StudentController</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Database Table</div>
-                    <div class="stat-value">attendance</div>
+                    <div class="stat-label">Service Layer</div>
+                    <div class="stat-value">StudentServiceImpl</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Repository</div>
-                    <div class="stat-value">AttendanceRepository</div>
+                    <div class="stat-label">DTO Pattern</div>
+                    <div class="stat-value">Request / Response</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Relationships</div>
-                    <div class="stat-value">Student + Activity + Faculty</div>
+                    <div class="stat-label">CRUD Status</div>
+                    <div class="stat-value">Active &amp; Tested</div>
                 </div>
             </div>
 
             <div class="status-box">
-                ✓ Day 1: Software setup & Spring Boot project initialization<br>
-                ✓ Day 2: GitHub repository connection & tracking<br>
+                ✓ Day 1: Software setup &amp; Spring Boot project initialization<br>
+                ✓ Day 2: GitHub repository connection &amp; tracking<br>
                 ✓ Day 3: Enterprise layered package structure<br>
-                ✓ Day 4: MySQL database connection & HikariCP pool configuration<br>
-                ✓ Day 5: Student JPA Entity, ORM relational mapping & StudentRepository<br>
-                ✓ Day 6: Faculty JPA Entity, ORM relational mapping & FacultyRepository<br>
-                ✓ Day 7: Activity JPA Entity, ORM relational mapping & ActivityRepository<br>
-                ✓ Day 8: Attendance JPA Entity, ORM relational mapping & AttendanceRepository
+                ✓ Day 4: MySQL database connection &amp; HikariCP pool configuration<br>
+                ✓ Day 5: Student JPA Entity, ORM relational mapping &amp; StudentRepository<br>
+                ✓ Day 6: Faculty JPA Entity, ORM relational mapping &amp; FacultyRepository<br>
+                ✓ Day 7: Activity JPA Entity, ORM relational mapping &amp; ActivityRepository<br>
+                ✓ Day 8: Attendance JPA Entity, ORM relational mapping &amp; AttendanceRepository<br>
+                ✓ Day 9: Student CRUD REST APIs (Repository, Service, Controller &amp; Validation)
             </div>
 
-            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📋 Attendance Entity Database Schema</h2>
+            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📡 Day 9 Student REST API Endpoints</h2>
             <div class="schema-table-wrapper">
                 <table class="schema-table">
                     <thead>
                         <tr>
-                            <th>Column Name</th>
-                            <th>JPA Field</th>
-                            <th>Data Type</th>
-                            <th>Constraints / Notes</th>
+                            <th>HTTP Method</th>
+                            <th>Endpoint Route</th>
+                            <th>Request Payload / Params</th>
+                            <th>Description</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>id</code></td>
-                            <td>Long id</td>
-                            <td><span class="chip-type">BIGINT</span></td>
-                            <td><span class="chip-constraint">PRIMARY KEY, AUTO_INCREMENT</span></td>
+                            <td><span class="chip-type" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">POST</span></td>
+                            <td><code>/api/students</code></td>
+                            <td><code>StudentRequestDto</code> (JSON)</td>
+                            <td>Registers a new student record with uniqueness validation.</td>
                         </tr>
                         <tr>
-                            <td><code>student_id</code></td>
-                            <td>Student student</td>
-                            <td><span class="chip-type">BIGINT (FK)</span></td>
-                            <td><span class="chip-constraint">FOREIGN KEY -&gt; students(id), NOT NULL</span></td>
+                            <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
+                            <td><code>/api/students</code></td>
+                            <td>Query: <code>department</code>, <code>yearOfStudy</code>, <code>status</code></td>
+                            <td>Retrieves all students or filtered by department / year / status.</td>
                         </tr>
                         <tr>
-                            <td><code>activity_id</code></td>
-                            <td>Activity activity</td>
-                            <td><span class="chip-type">BIGINT (FK)</span></td>
-                            <td><span class="chip-constraint">FOREIGN KEY -&gt; activities(id), NOT NULL</span></td>
+                            <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
+                            <td><code>/api/students/{id}</code></td>
+                            <td>Path Variable: <code>id</code> (Long)</td>
+                            <td>Fetches student details by primary database ID.</td>
                         </tr>
                         <tr>
-                            <td><code>faculty_id</code></td>
-                            <td>Faculty markedByFaculty</td>
-                            <td><span class="chip-type">BIGINT (FK)</span></td>
-                            <td>FOREIGN KEY -&gt; faculty(id), Nullable (approver/marker)</td>
+                            <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
+                            <td><code>/api/students/roll/{rollNumber}</code></td>
+                            <td>Path Variable: <code>rollNumber</code> (String)</td>
+                            <td>Fetches student details by institutional roll number.</td>
                         </tr>
                         <tr>
-                            <td><code>attendance_date</code></td>
-                            <td>LocalDate attendanceDate</td>
-                            <td><span class="chip-type">DATE</span></td>
-                            <td><span class="chip-constraint">NOT NULL, INDEXED</span></td>
+                            <td><span class="chip-type" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">PUT</span></td>
+                            <td><code>/api/students/{id}</code></td>
+                            <td><code>StudentRequestDto</code> (JSON)</td>
+                            <td>Updates existing student information with duplicate checks.</td>
                         </tr>
                         <tr>
-                            <td><code>status</code></td>
-                            <td>String status</td>
-                            <td><span class="chip-type">VARCHAR(30)</span></td>
-                            <td><span class="chip-constraint">NOT NULL, INDEXED</span> (PRESENT, ABSENT, LATE, ON_DUTY)</td>
-                        </tr>
-                        <tr>
-                            <td><code>session_slot</code></td>
-                            <td>String sessionSlot</td>
-                            <td><span class="chip-type">VARCHAR(50)</span></td>
-                            <td><span class="chip-constraint">NOT NULL, UNIQUE COMPONENT</span></td>
-                        </tr>
-                        <tr>
-                            <td><code>remarks</code></td>
-                            <td>String remarks</td>
-                            <td><span class="chip-type">VARCHAR(500)</span></td>
-                            <td>Nullable (notes, leave reason, OD duty)</td>
-                        </tr>
-                        <tr>
-                            <td><code>created_at</code> / <code>updated_at</code></td>
-                            <td>LocalDateTime</td>
-                            <td><span class="chip-type">TIMESTAMP</span></td>
-                            <td>Auditing via @PrePersist / @PreUpdate</td>
+                            <td><span class="chip-type" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">DELETE</span></td>
+                            <td><code>/api/students/{id}</code></td>
+                            <td>Path Variable: <code>id</code> (Long)</td>
+                            <td>Permanently deletes the student record.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -115,15 +98,16 @@
 
             <div class="next-step-box">
                 <div>
-                    <strong>Upcoming Roadmap:</strong> Day 9 — Implement Student CRUD Operations (Repository, Service, Controller)
+                    <strong>Upcoming Roadmap:</strong> Day 10 — Implement Faculty CRUD Operations (Repository, Service, Controller)
                 </div>
                 <span class="badge badge-next">Next Step</span>
             </div>
 
             <div class="api-links">
+                <a class="api-link-btn" href="/api/students" target="_blank">🎓 Student List API (/api/students)</a>
                 <a class="api-link-btn" href="/api/status" target="_blank">🌐 System Status API</a>
                 <a class="api-link-btn" href="/api/db-status" target="_blank">🗄️ Database Health API</a>
-                <a class="api-link-btn" href="/api/students/summary" target="_blank">🎓 Student Summary API</a>
+                <a class="api-link-btn" href="/api/students/summary" target="_blank">📋 Student Summary API</a>
                 <a class="api-link-btn" href="/api/faculty/summary" target="_blank">👨‍🏫 Faculty Summary API</a>
                 <a class="api-link-btn" href="/api/activities/summary" target="_blank">📅 Activity Summary API</a>
                 <a class="api-link-btn" href="/api/attendance/summary" target="_blank">📊 Attendance Summary API</a>

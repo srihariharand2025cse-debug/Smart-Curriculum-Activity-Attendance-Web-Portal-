@@ -41,7 +41,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Welcome to Smart Curriculum Activity & Attendance Web Portal! Day 8 Attendance Entity and Database Mapping is Complete.";
+        return "Welcome to Smart Curriculum Activity & Attendance Web Portal! Day 9 Student CRUD operations (Repository, Service, Controller) are Complete.";
     }
 
     @GetMapping("/api/status")
@@ -49,18 +49,19 @@ public class HomeController {
         Map<String, Object> statusData = new LinkedHashMap<>();
         statusData.put("status", "UP");
         statusData.put("project", "Smart Curriculum Activity & Attendance Web Portal");
-        statusData.put("currentMilestone", "Day 8: Create Attendance Entity and Database Mapping");
+        statusData.put("currentMilestone", "Day 9: Implement Student CRUD operations (Repository, Service, Controller)");
         statusData.put("layersConfigured", new String[]{
-                "controller",
-                "service (interface & impl)",
+                "controller (StudentController, HomeController)",
+                "service (StudentService & StudentServiceImpl)",
                 "repository (StudentRepository, FacultyRepository, ActivityRepository, AttendanceRepository)",
                 "entity (Student, Faculty, Activity, Attendance)",
-                "dto",
-                "exception",
+                "dto (StudentRequestDto, StudentResponseDto, ApiResponse)",
+                "exception (GlobalExceptionHandler, ResourceNotFoundException, DuplicateResourceException)",
                 "database (MySQL DataSource & Hibernate JPA)"
         });
         statusData.put("databaseConfigured", true);
         statusData.put("studentEntityMapped", true);
+        statusData.put("studentCrudActive", true);
         statusData.put("facultyEntityMapped", true);
         statusData.put("activityEntityMapped", true);
         statusData.put("attendanceEntityMapped", true);
@@ -68,7 +69,7 @@ public class HomeController {
         statusData.put("totalFaculty", facultyRepository != null ? facultyRepository.count() : 0L);
         statusData.put("totalActivities", activityRepository != null ? activityRepository.count() : 0L);
         statusData.put("totalAttendance", attendanceRepository != null ? attendanceRepository.count() : 0L);
-        statusData.put("nextMilestone", "Day 9: Implement Student CRUD operations (Repository, Service, Controller)");
+        statusData.put("nextMilestone", "Day 10: Implement Faculty CRUD operations");
 
         return ResponseEntity.ok(ApiResponse.success("Portal API is running smoothly", statusData));
     }

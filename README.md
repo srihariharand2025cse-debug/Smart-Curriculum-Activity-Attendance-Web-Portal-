@@ -131,12 +131,26 @@ The application follows the enterprise Spring Boot layered architecture:
 
 3. **Open the browser**:
    - Web Portal UI: [http://localhost:8080](http://localhost:8080)
+   - Student REST APIs: [http://localhost:8080/api/students](http://localhost:8080/api/students)
    - API Status: [http://localhost:8080/api/status](http://localhost:8080/api/status)
    - Database Connectivity Status: [http://localhost:8080/api/db-status](http://localhost:8080/api/db-status)
    - Student Summary: [http://localhost:8080/api/students/summary](http://localhost:8080/api/students/summary)
    - Faculty Summary: [http://localhost:8080/api/faculty/summary](http://localhost:8080/api/faculty/summary)
    - Activity Summary: [http://localhost:8080/api/activities/summary](http://localhost:8080/api/activities/summary)
    - Attendance Summary: [http://localhost:8080/api/attendance/summary](http://localhost:8080/api/attendance/summary)
+
+---
+
+## 📡 Student REST API Endpoints (Day 9)
+
+| Method | Endpoint | Description | Status Code |
+|:-------|:---------|:------------|:------------|
+| `POST` | `/api/students` | Register a new student | `201 Created` |
+| `GET` | `/api/students` | Retrieve all students (filters: `department`, `yearOfStudy`, `status`) | `200 OK` |
+| `GET` | `/api/students/{id}` | Retrieve student by primary ID | `200 OK` / `404 Not Found` |
+| `GET` | `/api/students/roll/{rollNumber}` | Retrieve student by roll number | `200 OK` / `404 Not Found` |
+| `PUT` | `/api/students/{id}` | Update student details by ID | `200 OK` / `404 Not Found` |
+| `DELETE` | `/api/students/{id}` | Delete student by ID | `200 OK` / `404 Not Found` |
 
 ---
 
@@ -150,7 +164,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 6**: Create Faculty entity and database mapping. *(Completed)*
 * **Day 7**: Create Activity entity and database mapping. *(Completed)*
 * **Day 8**: Create Attendance entity and database mapping. *(Completed)*
-* **Day 9**: Implement Student CRUD operations (Repository, Service, Controller).
+* **Day 9**: Implement Student CRUD operations (Repository, Service, Controller). *(Completed)*
 * **Day 10**: Implement Faculty CRUD operations.
 * **Day 11**: Implement Curriculum Activity management APIs.
 * **Day 12**: Implement Attendance marking and calculation APIs.
