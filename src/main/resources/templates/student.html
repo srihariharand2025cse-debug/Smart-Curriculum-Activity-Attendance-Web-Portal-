@@ -3,68 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Smart Curriculum Portal</title>
+    <title>Student Dashboard - Smart Curriculum Activity & Attendance Portal</title>
+    <meta name="description" content="Real-time student attendance visual metrics, activity participation tracking, and academic analytics.">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+    <!-- Navigation Header -->
+    <nav class="nav-bar">
+        <a href="/" class="nav-brand">
+            <div class="nav-logo-icon">🎓</div>
+            <span>Smart Curriculum Portal</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/student" class="nav-link active">Student Dashboard</a>
+            <a href="/faculty" class="nav-link">Faculty</a>
+            <a href="/admin" class="nav-link">Admin</a>
+            <a href="/api/status" class="nav-link" target="_blank">API Health</a>
+        </div>
+    </nav>
+
     <div class="container">
+        <!-- Hero Header -->
         <div class="header-card">
-            <span class="badge">✓ Day 13 – Student Dashboard</span>
-            <h1 class="portal-title">Student Dashboard</h1>
-            <p class="portal-subtitle">Overview of attendance, activities and quick links.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <span class="badge">✓ Day 15 – Student Attendance Visual Metrics</span>
+                <span id="activeStudentBadge" class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+                    👤 Roll No: <strong id="headerRollNumber">21CSE001</strong>
+                </span>
+            </div>
+            <h1 class="portal-title">Student Attendance Dashboard</h1>
+            <p class="portal-subtitle">Monitor real-time attendance visual metrics, curriculum activity milestones, and examination eligibility status.</p>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="stat-label">Attendance %</div>
-                <div class="stat-value">92%</div>
+        <!-- Student Selector & Search Bar -->
+        <div class="student-filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Select Student:</span>
+                <select id="studentSelectDropdown" class="form-select" style="min-width: 260px;">
+                    <option value="">Loading students...</option>
+                </select>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Upcoming Activities</div>
-                <ul class="list-unstyled">
-                    <li>Workshop on AI – 12 Oct</li>
-                    <li>Sports Day – 20 Oct</li>
-                </ul>
-            </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Quick API Links</div>
-                <div class="api-links">
-                    <a class="api-link-btn" href="/api/students" target="_blank">📓 Student List</a>
-                    <a class="api-link-btn" href="/api/attendance/summary" target="_blank">📊 Attendance Summary</a>
-                    <a class="api-link-btn" href="/api/activities" target="_blank">📅 Activities</a>
-                </div>
-            </div>
-            <!-- Student CRUD Form -->
-            <div class="dashboard-card">
-                <div class="stat-label">Create Student</div>
-                <form id="createStudentForm" class="crud-form">
-                    <input type="text" name="name" placeholder="Name" required />
-                    <input type="text" name="rollNumber" placeholder="Roll Number" required />
-                    <input type="text" name="department" placeholder="Department" required />
-                    <input type="number" name="yearOfStudy" placeholder="Year of Study" min="1" required />
-                    <button type="submit" class="api-link-btn">Create</button>
-                </form>
-            </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Update Student</div>
-                <form id="updateStudentForm" class="crud-form">
-                    <input type="number" name="id" placeholder="Student ID" required />
-                    <input type="text" name="name" placeholder="Name" />
-                    <input type="text" name="rollNumber" placeholder="Roll Number" />
-                    <input type="text" name="department" placeholder="Department" />
-                    <input type="number" name="yearOfStudy" placeholder="Year of Study" min="1" />
-                    <button type="submit" class="api-link-btn">Update</button>
-                </form>
-            </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Delete Student</div>
-                <form id="deleteStudentForm" class="crud-form">
-                    <input type="number" name="id" placeholder="Student ID" required />
-                    <button type="submit" class="api-link-btn">Delete</button>
-                </form>
+            <div class="filter-group">
+                <input type="text" id="rollNumberSearchInput" class="form-input" placeholder="Enter Roll No (e.g. 21CSE001)" />
+                <button type="button" id="btnSearchRoll" class="btn-primary">
+                    <span>🔍</span> Search
+                </button>
+                <button type="button" id="btnRefreshData" class="btn-secondary">
+                    <span>🔄</span> Refresh
+                </button>
             </div>
         </div>
+
+        <!-- Active Student Profile Banner -->
+        <div id="studentProfileCard" class="section-card" style="padding: 20px 28px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h2 id="studentFullName" style="font-size: 1.3rem; font-weight: 700; color: #fff;">Sri Hariharan</h2>
+                    <p id="studentMetaInfo" style="color: var(--text-muted); font-size: 0.9rem;">
+                        Dept: <span id="studentDept" style="color: #60a5fa; font-weight: 600;">Computer Science & Engineering</span> | 
+                        Year: <span id="studentYear" style="color: #a78bfa; font-weight: 600;">3rd Year</span> | 
+                        Status: <span id="studentStatus" style="color: #34d399; font-weight: 600;">ACTIVE</span>
+                    </p>
+                </div>
+                <div id="overallEligibilityContainer">
+                    <span id="overallEligibilityTag" class="eligibility-tag tag-eligible">
+                        ✓ Exam Eligible (Good Standing)
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Metrics Section (Radial Progress Ring + 4 KPI Cards) -->
+        <div class="metrics-hero-grid">
+            <!-- Circular Radial Progress Gauge -->
+            <div class="radial-gauge-card">
+                <div class="stat-label">Overall Attendance</div>
+                <div class="radial-progress-wrapper">
+                    <svg class="radial-svg" viewBox="0 0 160 160">
+                        <circle class="radial-bg" cx="80" cy="80" r="68"></circle>
+                        <circle id="radialMeterCircle" class="radial-meter" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="64"></circle>
+                    </svg>
+                    <div class="radial-text-content">
+                        <span id="radialPercentageText" class="radial-percentage">85%</span>
+                        <span class="radial-label">Logged</span>
+                    </div>
+                </div>
+                <p id="attendanceStatusMsg" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                    Above the mandatory 75% institutional threshold
+                </p>
+            </div>
+
+            <!-- 4 Key Performance Indicator Cards -->
+            <div class="kpi-cards-grid">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Overall Rate</span>
+                        <div class="kpi-icon blue">📊</div>
+                    </div>
+                    <div id="kpiOverallPct" class="kpi-val">85.0%</div>
+                    <div class="kpi-desc">Across all curriculum activities</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Total Sessions</span>
+                        <div class="kpi-icon purple">🗓️</div>
+                    </div>
+                    <div id="kpiTotalSessions" class="kpi-val">40</div>
+                    <div class="kpi-desc">Logged class & lab sessions</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Attended Days</span>
+                        <div class="kpi-icon green">✅</div>
+                    </div>
+                    <div id="kpiAttendedSessions" class="kpi-val">34</div>
+                    <div class="kpi-desc">Present & approved on-duty</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Absences</span>
+                        <div class="kpi-icon rose">⚠️</div>
+                    </div>
+                    <div id="kpiAbsentSessions" class="kpi-val">6</div>
+                    <div class="kpi-desc">Unexcused missed sessions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity & Subject Attendance Breakdown -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>📈</span> Activity & Subject Attendance Breakdown
+                </div>
+                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3);">
+                    Dynamic Metrics
+                </span>
+            </div>
+            <div id="activityBreakdownGrid" class="activity-bars-grid">
+                <!-- Populated dynamically via app.js -->
+            </div>
+        </div>
+
+        <!-- Attendance History Log Table -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>📜</span> Detailed Attendance Records
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="attendanceStatusFilter" class="form-select" style="padding: 6px 12px; font-size: 0.85rem;">
+                        <option value="ALL">All Statuses</option>
+                        <option value="PRESENT">Present</option>
+                        <option value="ABSENT">Absent</option>
+                        <option value="ON_DUTY">On-Duty</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity / Course</th>
+                            <th>Session Slot</th>
+                            <th>Status</th>
+                            <th>Remarks / Approval</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                Loading attendance history...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Attendance Test Marking & Student CRUD Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>⚙️</span> Interactive Portal Tools & Operations
+                </div>
+            </div>
+
+            <div class="crud-grid">
+                <!-- Mark Attendance Quick Form -->
+                <div class="crud-card">
+                    <div class="crud-card-title">
+                        <span>📝</span> Log Attendance Entry
+                    </div>
+                    <form id="markAttendanceQuickForm" class="crud-form">
+                        <div class="form-group">
+                            <label>Student ID</label>
+                            <input type="number" id="quickStudentId" name="studentId" class="form-input" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Activity ID</label>
+                            <input type="number" id="quickActivityId" name="activityId" class="form-input" value="1" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Attendance Date</label>
+                            <input type="date" id="quickDate" name="attendanceDate" class="form-input" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status" class="form-select">
+                                <option value="PRESENT">PRESENT</option>
+                                <option value="ABSENT">ABSENT</option>
+                                <option value="ON_DUTY">ON_DUTY</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Session Slot</label>
+                            <input type="text" name="sessionSlot" class="form-input" value="SESSION_1" />
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top: 6px;">
+                            <span>💾</span> Submit Attendance Log
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Create Student Form -->
+                <div class="crud-card">
+                    <div class="crud-card-title">
+                        <span>➕</span> Register New Student
+                    </div>
+                    <form id="createStudentForm" class="crud-form">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" name="name" class="form-input" placeholder="e.g. John Doe" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Roll Number</label>
+                            <input type="text" name="rollNumber" class="form-input" placeholder="e.g. 21CSE045" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" name="department" class="form-input" placeholder="e.g. Computer Science" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Year of Study</label>
+                            <input type="number" name="yearOfStudy" class="form-input" placeholder="1-4" min="1" max="4" required />
+                        </div>
+                        <button type="submit" class="btn-primary" style="margin-top: 6px;">
+                            <span>✨</span> Create Student
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Quick API Navigation Links -->
+                <div class="crud-card">
+                    <div class="crud-card-title">
+                        <span>🔗</span> REST API Endpoints
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+                        <a class="btn-secondary" href="/api/students" target="_blank">
+                            <span>👥</span> /api/students (All Students)
+                        </a>
+                        <a class="btn-secondary" href="/api/attendance" target="_blank">
+                            <span>📋</span> /api/attendance (Raw Attendance)
+                        </a>
+                        <a class="btn-secondary" href="/api/activities" target="_blank">
+                            <span>📅</span> /api/activities (Curriculum)
+                        </a>
+                        <a class="btn-secondary" href="/api/attendance/summary" target="_blank">
+                            <span>📊</span> /api/attendance/summary
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <footer class="portal-footer">
+        Smart Curriculum Activity & Attendance Web Portal &bull; Day 15 Milestone: Student Dashboard & Visual Metrics &bull; Java 21 & Spring Boot 3.2.5
+    </footer>
+
     <script src="/js/app.js"></script>
 </body>
 </html>

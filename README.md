@@ -167,13 +167,10 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 9**: Implement Student CRUD operations (Repository, Service, Controller). *(Completed)*
 * **Day 10**: Implement Faculty CRUD operations. *(Completed)*
 * **Day 11**: Implement Curriculum Activity management APIs. *(Completed)*
-* **Day 12**: Implement Attendance marking and calculation APIs.
-  - Create REST endpoints for attendance marking.
-  - Implement service methods for attendance calculation (percentage, total days).
-  - Add unit and integration tests.
-* **Day 13**: Build frontend pages (HTML & modern CSS layout).
-* **Day 14**: Connect frontend forms and views with Spring Boot REST APIs.
-* **Day 15**: Implement Student Dashboard with attendance visual metrics.
+* **Day 12**: Implement Attendance marking and calculation APIs. *(Completed)*
+* **Day 13**: Build frontend pages (HTML & modern CSS layout). *(Completed)*
+* **Day 14**: Connect frontend forms and views with Spring Boot REST APIs. *(Completed)*
+* **Day 15**: Implement Student Dashboard with attendance visual metrics. *(Completed)*
 * **Day 16**: Implement Faculty Dashboard for attendance & activity logging.
 * **Day 17**: Implement Admin Dashboard with centralized stats and controls.
 * **Day 18**: End-to-end testing, error handling, and bug fixing.
