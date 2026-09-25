@@ -57,6 +57,27 @@ public class ActivityController {
         return ResponseEntity.ok(dto);
     }
 
+    // Get all activities as list
+    @GetMapping("/list")
+    public ResponseEntity<List<ActivityResponseDto>> getAllActivitiesList() {
+        List<ActivityResponseDto> list = activityService.getAllActivitiesList();
+        return ResponseEntity.ok(list);
+    }
+
+    // Get activities by faculty ID
+    @GetMapping("/faculty/{facultyId}")
+    public ResponseEntity<List<ActivityResponseDto>> getActivitiesByFaculty(@PathVariable Long facultyId) {
+        List<ActivityResponseDto> list = activityService.getActivitiesByFacultyId(facultyId);
+        return ResponseEntity.ok(list);
+    }
+
+    // Get activities by department
+    @GetMapping("/department/{department}")
+    public ResponseEntity<List<ActivityResponseDto>> getActivitiesByDepartment(@PathVariable String department) {
+        List<ActivityResponseDto> list = activityService.getActivitiesByDepartment(department);
+        return ResponseEntity.ok(list);
+    }
+
     // Get activities by type
     @GetMapping("/type/{type}")
     public ResponseEntity<List<ActivityResponseDto>> getActivitiesByType(@PathVariable String type) {

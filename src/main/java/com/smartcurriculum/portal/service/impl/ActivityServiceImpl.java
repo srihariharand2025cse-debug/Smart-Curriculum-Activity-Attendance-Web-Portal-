@@ -25,10 +25,13 @@ import java.util.stream.Collectors;
 public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final com.smartcurriculum.portal.repository.FacultyRepository facultyRepository;
 
     @Autowired
-    public ActivityServiceImpl(ActivityRepository activityRepository) {
+    public ActivityServiceImpl(ActivityRepository activityRepository,
+                               com.smartcurriculum.portal.repository.FacultyRepository facultyRepository) {
         this.activityRepository = activityRepository;
+        this.facultyRepository = facultyRepository;
     }
 
     @Override
@@ -51,8 +54,12 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setStartDate(requestDto.getStartDate());
         activity.setEndDate(requestDto.getEndDate());
         activity.setMaxEnrollment(requestDto.getMaxEnrollment());
-        activity.setStatus(requestDto.getStatus());
-        // Faculty association can be set later via separate endpoint if needed
+        activity.setStatus(requestDto.getStatus() != null ? requestDto.getStatus() : "ACTIVE");
+
+        if (requestDto.getFacultyId() != null) {
+            facultyRepository.findById(requestDto.getFacultyId()).ifPresent(activity::setFaculty);
+        }
+
         Activity saved = activityRepository.save(activity);
         return ActivityResponseDto.fromEntity(saved);
     }
@@ -115,8 +122,10 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setStartDate(requestDto.getStartDate());
         activity.setEndDate(requestDto.getEndDate());
         activity.setMaxEnrollment(requestDto.getMaxEnrollment());
-        activity.setStatus(requestDto.getStatus());
-        // Note: faculty association handling omitted for brevity
+        activity.setStatus(requestDto.getStatus() != null ? requestDto.getStatus() : "ACTIVE");
+        if (requestDto.getFacultyId() != null) {
+            facultyRepository.findById(requestDto.getFacultyId()).ifPresent(activity::setFaculty);
+        }
         Activity saved = activityRepository.save(activity);
         return ActivityResponseDto.fromEntity(saved);
     }
@@ -126,6 +135,33 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity", "id", id));
         activityRepository.delete(activity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ActivityResponseDto> getAllActivitiesList() {
+        return activityRepository.findAll()
+                .stream()
+                .map(ActivityResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ActivityResponseDto> getActivitiesByFacultyId(Long facultyId) {
+        return activityRepository.findByFacultyId(facultyId)
+                .stream()
+                .map(ActivityResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ActivityResponseDto> getActivitiesByDepartment(String department) {
+        return activityRepository.findByDepartment(department)
+                .stream()
+                .map(ActivityResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Override

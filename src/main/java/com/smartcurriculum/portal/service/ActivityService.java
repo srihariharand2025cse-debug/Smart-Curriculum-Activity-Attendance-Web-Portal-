@@ -49,6 +49,21 @@ public interface ActivityService {
     void deleteActivity(Long id);
 
     /**
+     * Retrieves all activities as an unpaginated list.
+     */
+    java.util.List<ActivityResponseDto> getAllActivitiesList();
+
+    /**
+     * Retrieves all activities coordinated by a specific faculty member ID.
+     */
+    java.util.List<ActivityResponseDto> getActivitiesByFacultyId(Long facultyId);
+
+    /**
+     * Retrieves all activities belonging to a department.
+     */
+    java.util.List<ActivityResponseDto> getActivitiesByDepartment(String department);
+
+    /**
      * Returns total count of activities.
      */
     long getTotalActivityCount();

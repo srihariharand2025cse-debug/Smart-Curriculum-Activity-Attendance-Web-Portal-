@@ -51,11 +51,11 @@ public class HomeController {
         statusData.put("project", "Smart Curriculum Activity & Attendance Web Portal");
         statusData.put("currentMilestone", "Day 9: Implement Student CRUD operations (Repository, Service, Controller)");
         statusData.put("layersConfigured", new String[]{
-                "controller (StudentController, HomeController)",
-                "service (StudentService & StudentServiceImpl)",
+                "controller (StudentController, FacultyController, ActivityController, AttendanceController, DashboardController, HomeController)",
+                "service (StudentService, FacultyService, ActivityService, AttendanceService)",
                 "repository (StudentRepository, FacultyRepository, ActivityRepository, AttendanceRepository)",
                 "entity (Student, Faculty, Activity, Attendance)",
-                "dto (StudentRequestDto, StudentResponseDto, ApiResponse)",
+                "dto (StudentDto, FacultyDto, ActivityDto, AttendanceDto, ApiResponse)",
                 "exception (GlobalExceptionHandler, ResourceNotFoundException, DuplicateResourceException)",
                 "database (MySQL DataSource & Hibernate JPA)"
         });

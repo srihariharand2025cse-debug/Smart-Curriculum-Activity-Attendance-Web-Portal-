@@ -3,40 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Dashboard - Smart Curriculum Portal</title>
+    <title>Faculty Dashboard - Smart Curriculum Activity & Attendance Portal</title>
+    <meta name="description" content="Faculty Dashboard for attendance logging, batch class attendance marking, and curriculum activity management.">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+    <!-- Navigation Header -->
+    <nav class="nav-bar">
+        <a href="/" class="nav-brand">
+            <div class="nav-logo-icon">🎓</div>
+            <span>Smart Curriculum Portal</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/student" class="nav-link">Student Dashboard</a>
+            <a href="/faculty" class="nav-link active">Faculty Dashboard</a>
+            <a href="/admin" class="nav-link">Admin</a>
+            <a href="/api/status" class="nav-link" target="_blank">API Health</a>
+        </div>
+    </nav>
+
     <div class="container">
+        <!-- Hero Header -->
         <div class="header-card">
-            <span class="badge">✓ Day 13 – Faculty Dashboard</span>
-            <h1 class="portal-title">Faculty Dashboard</h1>
-            <p class="portal-subtitle">Manage classes, attendance and activities.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <span class="badge">✓ Day 16 – Faculty Attendance & Activity Logging</span>
+                <span id="activeFacultyBadge" class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; border-color: rgba(139, 92, 246, 0.3);">
+                    👨‍🏫 Faculty ID: <strong id="headerEmpId">FAC001</strong>
+                </span>
+            </div>
+            <h1 class="portal-title">Faculty Portal & Attendance Management</h1>
+            <p class="portal-subtitle">Schedule curriculum activities, log class session attendance, review batch student rosters, and monitor academic engagement.</p>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="stat-label">My Classes</div>
-                <div class="stat-value">3</div>
+        <!-- Faculty Selector Bar -->
+        <div class="student-filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Active Faculty:</span>
+                <select id="facultySelectDropdown" class="form-select" style="min-width: 280px;">
+                    <option value="">Loading faculty members...</option>
+                </select>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Attendance Marking</div>
-                <p>Placeholder UI to mark attendance for selected class.</p>
+            <div class="filter-group">
+                <input type="text" id="facultySearchInput" class="form-input" placeholder="Enter Emp ID (e.g. FAC001)" />
+                <button type="button" id="btnSearchFaculty" class="btn-primary">
+                    <span>🔍</span> Find
+                </button>
+                <button type="button" id="btnRefreshFaculty" class="btn-secondary">
+                    <span>🔄</span> Refresh
+                </button>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Create Activity</div>
-                <p>Form stub for scheduling a new activity.</p>
-            </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Quick API Links</div>
-                <div class="api-links">
-                    <a class="api-link-btn" href="/api/faculty" target="_blank">👨‍🏫 Faculty List</a>
-                    <a class="api-link-btn" href="/api/attendance" target="_blank">📊 Attendance API</a>
-                    <a class="api-link-btn" href="/api/activities" target="_blank">📅 Activities API</a>
+        </div>
+
+        <!-- Active Faculty Profile Summary Card -->
+        <div id="facultyProfileCard" class="section-card" style="padding: 22px 28px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px;">
+                <div>
+                    <h2 id="facultyFullName" style="font-size: 1.35rem; font-weight: 700; color: #fff;">Dr. Ravi Kumar</h2>
+                    <p id="facultyMetaInfo" style="color: var(--text-muted); font-size: 0.92rem; margin-top: 4px;">
+                        <span id="facultyDesignation" style="color: #60a5fa; font-weight: 600;">Professor</span> &bull; 
+                        <span id="facultyDept" style="color: #a78bfa; font-weight: 600;">Computer Science and Engineering</span> &bull; 
+                        Specialization: <span id="facultySpec" style="color: #38bdf8;">Artificial Intelligence</span>
+                    </p>
+                    <div style="display: flex; gap: 16px; margin-top: 8px; font-size: 0.85rem; color: var(--text-dim);">
+                        <span>✉️ <span id="facultyEmail">ravi.kumar@college.edu</span></span>
+                        <span>📞 <span id="facultyPhone">9800000001</span></span>
+                        <span>⭐ Experience: <span id="facultyExp">15</span> yrs</span>
+                    </div>
+                </div>
+                <div>
+                    <span id="facultyStatusTag" class="badge" style="padding: 8px 16px; font-size: 0.85rem;">
+                        ● ACTIVE FACULTY
+                    </span>
                 </div>
             </div>
         </div>
+
+        <!-- 4 Key Performance Indicators (KPI Cards) -->
+        <div class="kpi-cards-grid" style="margin-bottom: 28px;">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Assigned Activities</span>
+                    <div class="kpi-icon blue">📚</div>
+                </div>
+                <div id="kpiFacultyActivitiesCount" class="kpi-val">2</div>
+                <div class="kpi-desc">Courses, labs & workshops</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Attendance Sessions</span>
+                    <div class="kpi-icon purple">🗓️</div>
+                </div>
+                <div id="kpiFacultySessionsCount" class="kpi-val">24</div>
+                <div class="kpi-desc">Logged attendance records</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Students Enrolled</span>
+                    <div class="kpi-icon green">👥</div>
+                </div>
+                <div id="kpiFacultyStudentsCount" class="kpi-val">60</div>
+                <div class="kpi-desc">Across coordinated activities</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Avg Class Attendance</span>
+                    <div class="kpi-icon rose">📈</div>
+                </div>
+                <div id="kpiFacultyAvgAttendance" class="kpi-val">88.5%</div>
+                <div class="kpi-desc">Overall student presence rate</div>
+            </div>
+        </div>
+
+        <!-- Faculty Tabs Navigation -->
+        <div class="dashboard-tabs">
+            <button type="button" class="tab-btn active" data-tab="tab-attendance">
+                <span>📝</span> Class Attendance Marking
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-activities">
+                <span>📅</span> Activity Logging & Management
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-analytics">
+                <span>📊</span> Analytics & Session Logs
+            </button>
+        </div>
+
+        <!-- TAB 1: Attendance Marking & Quick Roster -->
+        <div id="tab-attendance" class="tab-content active">
+            <!-- Roster Attendance Session Config Card -->
+            <div class="roster-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📋</span> Mark Session Attendance by Class Roster
+                    </div>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+                        Fast Batch Marking
+                    </span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>Select Activity / Course</label>
+                        <select id="rosterActivitySelect" class="form-select">
+                            <option value="">Loading activities...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Attendance Date</label>
+                        <input type="date" id="rosterAttendanceDate" class="form-input" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Session / Period Slot</label>
+                        <select id="rosterSessionSlot" class="form-select">
+                            <option value="SESSION_1">Session 1 (09:00 - 10:00)</option>
+                            <option value="SESSION_2">Session 2 (10:00 - 11:00)</option>
+                            <option value="SESSION_3">Session 3 (11:15 - 12:15)</option>
+                            <option value="SESSION_4">Session 4 (01:15 - 02:15)</option>
+                            <option value="LAB_SLOT_1">Lab Slot Morning (09:00 - 12:00)</option>
+                            <option value="LAB_SLOT_2">Lab Slot Afternoon (01:30 - 04:30)</option>
+                            <option value="WORKSHOP_FULL">Workshop Full Day</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <label>&nbsp;</label>
+                        <button type="button" id="btnLoadRoster" class="btn-primary" style="height: 42px;">
+                            <span>👥</span> Load Student Roster
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Roster Controls & Action Toolbar -->
+                <div class="roster-controls">
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span style="font-size: 0.88rem; color: var(--text-muted); font-weight: 600;">Quick Shortcuts:</span>
+                        <button type="button" id="btnMarkAllPresent" class="btn-secondary" style="padding: 6px 12px; font-size: 0.82rem;">
+                            <span>✅</span> Mark All Present
+                        </button>
+                        <button type="button" id="btnMarkAllAbsent" class="btn-secondary" style="padding: 6px 12px; font-size: 0.82rem;">
+                            <span>❌</span> Mark All Absent
+                        </button>
+                    </div>
+                    <div id="rosterStatsSummary" style="font-size: 0.88rem; color: var(--text-muted);">
+                        Total Students: <strong id="rosterCount" style="color: #fff;">4</strong> | 
+                        Present: <strong id="rosterPresentCount" style="color: #34d399;">0</strong> | 
+                        Absent: <strong id="rosterAbsentCount" style="color: #fb7185;">0</strong> | 
+                        On-Duty: <strong id="rosterOdCount" style="color: #c084fc;">0</strong>
+                    </div>
+                </div>
+
+                <!-- Interactive Student Roster Table -->
+                <div class="table-responsive">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Department & Year</th>
+                                <th>Attendance Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rosterTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    Click "Load Student Roster" to display class attendance sheet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" id="btnSubmitRosterAttendance" class="btn-primary" style="padding: 12px 28px; font-size: 1rem;">
+                        <span>💾</span> Submit Class Attendance
+                    </button>
+                </div>
+            </div>
+
+            <!-- Single Student Fast Logging & Quick Tools -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>⚡</span> Individual Student Attendance Logger
+                    </div>
+                </div>
+
+                <div class="crud-grid">
+                    <div class="crud-card">
+                        <div class="crud-card-title">
+                            <span>📝</span> Log Attendance for Specific Student
+                        </div>
+                        <form id="facultySingleAttendanceForm" class="crud-form">
+                            <div class="form-group">
+                                <label>Student</label>
+                                <select id="singleStudentSelect" name="studentId" class="form-select" required>
+                                    <option value="">Loading students...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Activity / Subject</label>
+                                <select id="singleActivitySelect" name="activityId" class="form-select" required>
+                                    <option value="">Loading activities...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Attendance Date</label>
+                                <input type="date" id="singleAttendanceDate" name="attendanceDate" class="form-input" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Session Slot</label>
+                                <input type="text" name="sessionSlot" class="form-input" value="SESSION_1" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="PRESENT">PRESENT</option>
+                                    <option value="ABSENT">ABSENT</option>
+                                    <option value="ON_DUTY">ON_DUTY</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Remarks</label>
+                                <input type="text" name="remarks" class="form-input" placeholder="Optional notes" />
+                            </div>
+                            <button type="submit" class="btn-primary" style="margin-top: 8px;">
+                                <span>💾</span> Submit Attendance Log
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Quick Navigation & Tips Card -->
+                    <div class="crud-card">
+                        <div class="crud-card-title">
+                            <span>💡</span> Faculty Attendance Guidelines
+                        </div>
+                        <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; display: flex; flex-direction: column; gap: 12px;">
+                            <p>• <strong>Attendance Deadline:</strong> Daily class attendance should be logged within 24 hours of session completion.</p>
+                            <p>• <strong>On-Duty (OD) Records:</strong> Select "ON_DUTY" for students participating in approved symposiums, sports, or external academic events.</p>
+                            <p>• <strong>75% Threshold:</strong> Students falling below 75% attendance receive automated shortage notifications on their Student Portal.</p>
+                            <div style="margin-top: 8px;">
+                                <a class="btn-secondary" href="/student" style="width: 100%; justify-content: center;">
+                                    <span>🎓</span> Preview Student Dashboard View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Activity Logging & Management -->
+        <div id="tab-activities" class="tab-content">
+            <!-- Schedule New Activity Form Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>➕</span> Schedule New Curriculum Activity
+                    </div>
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                        Create Course / Workshop
+                    </span>
+                </div>
+
+                <form id="createActivityForm" class="crud-form">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+                        <div class="form-group">
+                            <label>Activity Code *</label>
+                            <input type="text" name="activityCode" class="form-input" placeholder="e.g. ACT-CS505-W02" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Activity Title *</label>
+                            <input type="text" name="title" class="form-input" placeholder="e.g. Applied Machine Learning Workshop" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Activity Type *</label>
+                            <select name="activityType" class="form-select" required>
+                                <option value="WORKSHOP">WORKSHOP</option>
+                                <option value="LAB">LABORATORY</option>
+                                <option value="LECTURE">LECTURE (THEORY)</option>
+                                <option value="SEMINAR">SEMINAR</option>
+                                <option value="EVENT">ACADEMIC EVENT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <input type="text" name="department" id="activityFormDept" class="form-input" value="Computer Science and Engineering" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Academic Year</label>
+                            <input type="text" name="academicYear" class="form-input" value="2025-2026" />
+                        </div>
+                        <div class="form-group">
+                            <label>Semester (1-8)</label>
+                            <input type="number" name="semester" class="form-input" value="5" min="1" max="8" />
+                        </div>
+                        <div class="form-group">
+                            <label>Credits</label>
+                            <input type="number" name="credits" class="form-input" value="3" min="0" max="10" />
+                        </div>
+                        <div class="form-group">
+                            <label>Max Enrollment</label>
+                            <input type="number" name="maxEnrollment" class="form-input" value="60" min="1" />
+                        </div>
+                        <div class="form-group">
+                            <label>Venue / Lab Location</label>
+                            <input type="text" name="venue" class="form-input" placeholder="e.g. Computer Lab 3 / Auditorium" />
+                        </div>
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" name="startDate" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" name="endDate" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status" class="form-select">
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="UPCOMING">UPCOMING</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 8px;">
+                        <label>Activity Description & Objectives</label>
+                        <textarea name="description" class="form-input" rows="3" placeholder="Provide syllabus summary, target student outcomes, and course structure..."></textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                        <button type="reset" class="btn-secondary">
+                            <span>🧹</span> Reset Form
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <span>✨</span> Create & Schedule Activity
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Coordinated Activities List Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📚</span> Coordinated Curriculum Activities
+                    </div>
+                    <button type="button" id="btnRefreshActivities" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">
+                        <span>🔄</span> Refresh List
+                    </button>
+                </div>
+
+                <div id="facultyActivitiesContainer" class="faculty-activity-grid">
+                    <!-- Dynamic Activity Cards populated via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Analytics & Session Logs -->
+        <div id="tab-analytics" class="tab-content">
+            <!-- Activity Attendance Analytics Breakdown -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📈</span> Course & Activity Turnout Metrics
+                    </div>
+                </div>
+                <div id="facultyTurnoutGrid" class="activity-bars-grid">
+                    <!-- Turnout meters populated via JS -->
+                </div>
+            </div>
+
+            <!-- Faculty Logged Attendance History Table -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📜</span> Recent Attendance Records Marked
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="facultyFilterStatus" class="form-select" style="padding: 6px 12px; font-size: 0.85rem;">
+                            <option value="ALL">All Statuses</option>
+                            <option value="PRESENT">Present</option>
+                            <option value="ABSENT">Absent</option>
+                            <option value="ON_DUTY">On-Duty</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Student Roll</th>
+                                <th>Student Name</th>
+                                <th>Activity Code</th>
+                                <th>Slot</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facultyHistoryTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    Loading attendance history...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <footer class="portal-footer">
+        Smart Curriculum Activity & Attendance Web Portal &bull; Day 16 Milestone: Faculty Dashboard & Activity Logging &bull; Java 21 & Spring Boot 3.2.5
+    </footer>
+
     <script src="/js/app.js"></script>
 </body>
 </html>
