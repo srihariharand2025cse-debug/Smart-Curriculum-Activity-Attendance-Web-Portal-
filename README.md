@@ -172,7 +172,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 14**: Connect frontend forms and views with Spring Boot REST APIs. *(Completed)*
 * **Day 15**: Implement Student Dashboard with attendance visual metrics. *(Completed)*
 * **Day 16**: Implement Faculty Dashboard for attendance & activity logging. *(Completed)*
-* **Day 17**: Implement Admin Dashboard with centralized stats and controls.
+* **Day 17**: Implement Admin Dashboard with centralized stats and controls. *(Completed)*
 * **Day 18**: End-to-end testing, error handling, and bug fixing.
 * **Day 19**: Polish UI design, responsiveness, and user experience.
 * **Day 20**: Final verification, screenshots, project wrap-up, and release.

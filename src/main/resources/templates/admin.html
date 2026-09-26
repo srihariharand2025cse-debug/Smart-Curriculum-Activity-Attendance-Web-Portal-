@@ -3,45 +3,769 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Smart Curriculum Portal</title>
+    <title>Admin Dashboard & Control Center - Smart Curriculum Activity & Attendance Portal</title>
+    <meta name="description" content="Centralized administration, student & faculty record management, curriculum activity oversight, and institutional attendance analytics.">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+    <!-- Navigation Header -->
+    <nav class="nav-bar">
+        <a href="/" class="nav-brand">
+            <div class="nav-logo-icon">🎓</div>
+            <span>Smart Curriculum Portal</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/student" class="nav-link">Student Dashboard</a>
+            <a href="/faculty" class="nav-link">Faculty Dashboard</a>
+            <a href="/admin" class="nav-link active">Admin Dashboard</a>
+            <a href="/api/status" class="nav-link" target="_blank">API Health</a>
+        </div>
+    </nav>
+
     <div class="container">
+        <!-- Hero Header -->
         <div class="header-card">
-            <span class="badge">✓ Day 13 – Admin Dashboard</span>
-            <h1 class="portal-title">Admin Dashboard</h1>
-            <p class="portal-subtitle">Overview of system-wide statistics and management shortcuts.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <span class="badge">✓ Day 17 – Admin Dashboard & Centralized Controls</span>
+                <span id="adminSystemHealthBadge" class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                    🛡️ System: <strong id="adminDbStatusText">CONNECTED &amp; HEALTHY</strong>
+                </span>
+            </div>
+            <h1 class="portal-title">Institutional Admin Dashboard &amp; Control Center</h1>
+            <p class="portal-subtitle">Centralized oversight, student &amp; faculty record administration, curriculum activity lifecycle approval, and attendance analytics.</p>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="stat-label">Total Students</div>
-                <div class="stat-value" id="total-students">—</div>
+        <!-- 4 Key Performance Indicators (KPI Cards) -->
+        <div class="kpi-cards-grid" style="margin-bottom: 28px;">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Total Students</span>
+                    <div class="kpi-icon blue">🎓</div>
+                </div>
+                <div id="kpiAdminStudents" class="kpi-val">—</div>
+                <div class="kpi-desc"><span id="kpiAdminActiveStudents">—</span> Active students enrolled</div>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Total Faculty</div>
-                <div class="stat-value" id="total-faculty">—</div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Faculty Members</span>
+                    <div class="kpi-icon purple">👨‍🏫</div>
+                </div>
+                <div id="kpiAdminFaculty" class="kpi-val">—</div>
+                <div class="kpi-desc"><span id="kpiAdminActiveFaculty">—</span> Active teaching staff</div>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Activities</div>
-                <div class="stat-value" id="total-activities">—</div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Curriculum Activities</span>
+                    <div class="kpi-icon green">📅</div>
+                </div>
+                <div id="kpiAdminActivities" class="kpi-val">—</div>
+                <div class="kpi-desc"><span id="kpiAdminActiveActivities">—</span> Active &amp; ongoing</div>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Attendance Records</div>
-                <div class="stat-value" id="total-attendance">—</div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-title">Attendance Rate</span>
+                    <div class="kpi-icon rose">📊</div>
+                </div>
+                <div id="kpiAdminAttendanceRate" class="kpi-val">—%</div>
+                <div class="kpi-desc">Institutional overall turnout</div>
             </div>
-            <div class="dashboard-card">
-                <div class="stat-label">Management Links</div>
-                <div class="api-links">
-                    <a class="api-link-btn" href="/api/students" target="_blank">📓 Students</a>
-                    <a class="api-link-btn" href="/api/faculty" target="_blank">👨‍🏫 Faculty</a>
-                    <a class="api-link-btn" href="/api/activities" target="_blank">📅 Activities</a>
-                    <a class="api-link-btn" href="/api/attendance" target="_blank">📊 Attendance</a>
+        </div>
+
+        <!-- Dashboard Tabs Navigation -->
+        <div class="dashboard-tabs">
+            <button type="button" class="tab-btn active" data-tab="tab-overview">
+                <span>📊</span> Overview &amp; Analytics
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-students">
+                <span>🎓</span> Student Management
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-faculty">
+                <span>👨‍🏫</span> Faculty Management
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-activities">
+                <span>📅</span> Activity Oversight
+            </button>
+            <button type="button" class="tab-btn" data-tab="tab-attendance">
+                <span>📈</span> Attendance Oversight
+            </button>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 1: OVERVIEW & INSTITUTIONAL ANALYTICS                         -->
+        <!-- ================================================================= -->
+        <div id="tab-overview" class="tab-content active">
+            <!-- Quick Actions Bar -->
+            <div class="admin-toolbar">
+                <div>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff;">⚡ Administrative Quick Operations</h3>
+                    <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 2px;">Direct shortcut buttons to create profiles, schedule activities, and run audits.</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" id="btnQuickAddStudent" class="btn-primary" style="padding: 8px 16px; font-size: 0.88rem;">
+                        <span>➕</span> Add Student
+                    </button>
+                    <button type="button" id="btnQuickAddFaculty" class="btn-secondary" style="padding: 8px 16px; font-size: 0.88rem;">
+                        <span>👨‍🏫</span> Add Faculty
+                    </button>
+                    <button type="button" id="btnQuickAddActivity" class="btn-secondary" style="padding: 8px 16px; font-size: 0.88rem;">
+                        <span>📅</span> Schedule Activity
+                    </button>
+                    <button type="button" id="btnRefreshAdminStats" class="btn-secondary" style="padding: 8px 16px; font-size: 0.88rem;">
+                        <span>🔄</span> Refresh Stats
+                    </button>
+                </div>
+            </div>
+
+            <!-- Attendance Distribution Chart & System Status Card -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                <!-- Attendance Distribution Breakdown -->
+                <div class="breakdown-chart-card">
+                    <div class="section-header" style="margin-bottom: 8px;">
+                        <div class="section-title" style="font-size: 1.05rem;">
+                            <span>📈</span> Institutional Attendance Turnout
+                        </div>
+                        <span id="overviewAttTotalBadge" class="badge" style="font-size: 0.75rem;">— Logs</span>
+                    </div>
+
+                    <div class="segmented-progress-bar">
+                        <div id="barSegmentPresent" class="bar-segment present" style="width: 0%;" title="Present"></div>
+                        <div id="barSegmentOd" class="bar-segment on-duty" style="width: 0%;" title="On-Duty"></div>
+                        <div id="barSegmentAbsent" class="bar-segment absent" style="width: 0%;" title="Absent"></div>
+                    </div>
+
+                    <div class="segment-legend-grid">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #10b981;"></span>
+                            <span>Present: <strong id="overviewPresentVal" style="color: #fff;">0</strong> (<span id="overviewPresentPct">0%</span>)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #8b5cf6;"></span>
+                            <span>On-Duty: <strong id="overviewOdVal" style="color: #fff;">0</strong> (<span id="overviewOdPct">0%</span>)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #f43f5e;"></span>
+                            <span>Absent: <strong id="overviewAbsentVal" style="color: #fff;">0</strong> (<span id="overviewAbsentPct">0%</span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System & Database Health Card -->
+                <div class="breakdown-chart-card">
+                    <div class="section-header" style="margin-bottom: 8px;">
+                        <div class="section-title" style="font-size: 1.05rem;">
+                            <span>🖥️</span> Backend &amp; Database Health
+                        </div>
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+                            Spring Boot 3.2.5
+                        </span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; color: var(--text-muted); margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Database Engine:</span>
+                            <strong id="healthDbEngine" style="color: #60a5fa;">MySQL Server</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>JPA Hibernate Status:</span>
+                            <strong style="color: #34d399;">Active &amp; Mapped (4 Entities)</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Server Time:</span>
+                            <strong id="healthServerTime" style="color: #fff;">—</strong>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-top: 16px;">
+                        <a href="/api/status" target="_blank" class="action-btn view" style="flex: 1; justify-content: center;">
+                            <span>🌐</span> /api/status
+                        </a>
+                        <a href="/api/db-status" target="_blank" class="action-btn view" style="flex: 1; justify-content: center;">
+                            <span>🗄️</span> /api/db-status
+                        </a>
+                        <a href="/api/admin/stats" target="_blank" class="action-btn view" style="flex: 1; justify-content: center;">
+                            <span>📊</span> /api/admin/stats
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department-wise Distribution Summary -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>🏛️</span> Department-wise Student &amp; Faculty Distribution
+                    </div>
+                </div>
+                <div id="departmentStatsContainer" class="dept-pill-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Activity Type Breakdown Summary -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📚</span> Curriculum Activities by Category
+                    </div>
+                </div>
+                <div id="activityTypeStatsContainer" class="dept-pill-grid">
+                    <!-- Populated dynamically via JS -->
                 </div>
             </div>
         </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 2: STUDENT MANAGEMENT (FULL CRUD)                             -->
+        <!-- ================================================================= -->
+        <div id="tab-students" class="tab-content">
+            <div class="admin-toolbar">
+                <div class="admin-filter-row">
+                    <input type="text" id="studentSearchInput" class="form-input" placeholder="🔍 Search Roll No or Name..." style="max-width: 240px;" />
+                    <select id="studentDeptFilter" class="form-select" style="max-width: 220px;">
+                        <option value="ALL">All Departments</option>
+                    </select>
+                    <select id="studentYearFilter" class="form-select" style="max-width: 140px;">
+                        <option value="ALL">All Years</option>
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
+                        <option value="4">Year 4</option>
+                    </select>
+                    <select id="studentStatusFilter" class="form-select" style="max-width: 140px;">
+                        <option value="ALL">All Status</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="btnOpenAddStudentModal" class="btn-primary">
+                        <span>➕</span> Register Student
+                    </button>
+                </div>
+            </div>
+
+            <!-- Students List Table Card -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>🎓</span> Student Directory &amp; Records
+                    </div>
+                    <span id="studentTableCountBadge" class="badge">Loading students...</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Full Name</th>
+                                <th>Department</th>
+                                <th>Year</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminStudentTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    Loading student records...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 3: FACULTY MANAGEMENT (FULL CRUD)                             -->
+        <!-- ================================================================= -->
+        <div id="tab-faculty" class="tab-content">
+            <div class="admin-toolbar">
+                <div class="admin-filter-row">
+                    <input type="text" id="facultySearchInput" class="form-input" placeholder="🔍 Search Emp ID or Name..." style="max-width: 240px;" />
+                    <select id="facultyDeptFilter" class="form-select" style="max-width: 220px;">
+                        <option value="ALL">All Departments</option>
+                    </select>
+                    <select id="facultyDesigFilter" class="form-select" style="max-width: 180px;">
+                        <option value="ALL">All Designations</option>
+                    </select>
+                    <select id="facultyStatusFilter" class="form-select" style="max-width: 140px;">
+                        <option value="ALL">All Status</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="btnOpenAddFacultyModal" class="btn-primary">
+                        <span>👨‍🏫</span> Add Faculty
+                    </button>
+                </div>
+            </div>
+
+            <!-- Faculty List Table Card -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>👨‍🏫</span> Faculty Directory &amp; Staff Records
+                    </div>
+                    <span id="facultyTableCountBadge" class="badge">Loading faculty...</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Emp ID</th>
+                                <th>Full Name</th>
+                                <th>Department</th>
+                                <th>Designation</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Experience</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminFacultyTableBody">
+                            <tr>
+                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    Loading faculty records...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 4: ACTIVITY OVERSIGHT & SCHEDULING (FULL CRUD)                -->
+        <!-- ================================================================= -->
+        <div id="tab-activities" class="tab-content">
+            <div class="admin-toolbar">
+                <div class="admin-filter-row">
+                    <input type="text" id="activitySearchInput" class="form-input" placeholder="🔍 Search Code or Title..." style="max-width: 240px;" />
+                    <select id="activityDeptFilter" class="form-select" style="max-width: 220px;">
+                        <option value="ALL">All Departments</option>
+                    </select>
+                    <select id="activityTypeFilter" class="form-select" style="max-width: 160px;">
+                        <option value="ALL">All Types</option>
+                        <option value="WORKSHOP">WORKSHOP</option>
+                        <option value="LAB">LAB</option>
+                        <option value="LECTURE">LECTURE</option>
+                        <option value="SEMINAR">SEMINAR</option>
+                        <option value="EVENT">EVENT</option>
+                    </select>
+                    <select id="activityStatusFilter" class="form-select" style="max-width: 150px;">
+                        <option value="ALL">All Status</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="UPCOMING">UPCOMING</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="btnOpenAddActivityModal" class="btn-primary">
+                        <span>➕</span> Schedule Activity
+                    </button>
+                </div>
+            </div>
+
+            <!-- Activities Table Card -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📅</span> Institution-Wide Curriculum Activities &amp; Oversight
+                    </div>
+                    <span id="activityTableCountBadge" class="badge">Loading activities...</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Activity Title</th>
+                                <th>Type</th>
+                                <th>Department</th>
+                                <th>Coordinator</th>
+                                <th>Credits</th>
+                                <th>Capacity</th>
+                                <th>Status &amp; Controls</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminActivityTableBody">
+                            <tr>
+                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    Loading activity records...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 5: ATTENDANCE OVERSIGHT & INSPECTION                          -->
+        <!-- ================================================================= -->
+        <div id="tab-attendance" class="tab-content">
+            <!-- Student Attendance Inspector Tool -->
+            <div class="inspector-card">
+                <div class="section-header" style="margin-bottom: 12px;">
+                    <div class="section-title">
+                        <span>🔍</span> Institutional Student Attendance Inspector
+                    </div>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+                        Deep Analytics Tool
+                    </span>
+                </div>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <input type="text" id="inspectorRollInput" class="form-input" placeholder="Enter Roll Number (e.g. 21CSE001)" style="min-width: 260px;" />
+                    <button type="button" id="btnInspectStudent" class="btn-primary">
+                        <span>🔍</span> Inspect Student Records
+                    </button>
+                </div>
+
+                <div id="inspectorResultsPanel" style="display: none;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                        <div class="dept-stat-card">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Student Name</div>
+                                <strong id="inspStudentName" style="color: #fff; font-size: 1.1rem;">—</strong>
+                            </div>
+                        </div>
+                        <div class="dept-stat-card">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Overall Turnout</div>
+                                <strong id="inspStudentPct" style="color: #34d399; font-size: 1.1rem;">—%</strong>
+                            </div>
+                        </div>
+                        <div class="dept-stat-card">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Sessions Attended</div>
+                                <strong id="inspStudentSessions" style="color: #60a5fa; font-size: 1.1rem;">0 / 0</strong>
+                            </div>
+                        </div>
+                        <div class="dept-stat-card">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Exam Eligibility</div>
+                                <span id="inspStudentEligibilityTag" class="eligibility-tag tag-eligible" style="display: inline-block; margin-top: 4px;">Eligible</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Records Filter Toolbar -->
+            <div class="admin-toolbar">
+                <div class="admin-filter-row">
+                    <input type="text" id="attSearchRollInput" class="form-input" placeholder="🔍 Filter by Roll No..." style="max-width: 220px;" />
+                    <select id="attFilterStatus" class="form-select" style="max-width: 160px;">
+                        <option value="ALL">All Statuses</option>
+                        <option value="PRESENT">PRESENT</option>
+                        <option value="ABSENT">ABSENT</option>
+                        <option value="ON_DUTY">ON_DUTY</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="btnRefreshAttendance" class="btn-secondary">
+                        <span>🔄</span> Refresh Attendance Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- Attendance Records Table -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📜</span> Institution-Wide Attendance Logs
+                    </div>
+                    <span id="attendanceTableCountBadge" class="badge">Loading logs...</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>Log ID</th>
+                                <th>Date</th>
+                                <th>Student Roll</th>
+                                <th>Student Name</th>
+                                <th>Activity Code</th>
+                                <th>Slot</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAttendanceTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    Loading attendance records...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: STUDENT CREATE / EDIT MODAL                                  -->
+    <!-- ===================================================================== -->
+    <div id="studentModal" class="modal-backdrop">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div id="studentModalTitle" class="modal-title">
+                    <span>🎓</span> Register New Student
+                </div>
+                <button type="button" class="modal-close-btn" data-close-modal="studentModal">&times;</button>
+            </div>
+            <form id="studentModalForm">
+                <input type="hidden" id="studentModalId" name="id" />
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                        <div class="form-group">
+                            <label>Roll Number *</label>
+                            <input type="text" id="studentModalRoll" name="rollNumber" class="form-input" placeholder="e.g. 21CSE055" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="studentModalName" name="name" class="form-input" placeholder="e.g. Alexander Smith" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <input type="text" id="studentModalDept" name="department" class="form-input" placeholder="e.g. Computer Science and Engineering" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Year of Study (1-4) *</label>
+                            <input type="number" id="studentModalYear" name="yearOfStudy" class="form-input" min="1" max="4" value="3" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <input type="text" id="studentModalSection" name="section" class="form-input" placeholder="e.g. A" value="A" />
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="studentModalStatus" name="status" class="form-select">
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="studentModalEmail" name="email" class="form-input" placeholder="e.g. alex@college.edu" />
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="studentModalPhone" name="phoneNumber" class="form-input" placeholder="e.g. 9876543210" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-close-modal="studentModal">Cancel</button>
+                    <button type="submit" id="btnSaveStudent" class="btn-primary">
+                        <span>💾</span> Save Student Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: FACULTY CREATE / EDIT MODAL                                  -->
+    <!-- ===================================================================== -->
+    <div id="facultyModal" class="modal-backdrop">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div id="facultyModalTitle" class="modal-title">
+                    <span>👨‍🏫</span> Add Faculty Member
+                </div>
+                <button type="button" class="modal-close-btn" data-close-modal="facultyModal">&times;</button>
+            </div>
+            <form id="facultyModalForm">
+                <input type="hidden" id="facultyModalId" name="id" />
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                        <div class="form-group">
+                            <label>Employee ID *</label>
+                            <input type="text" id="facultyModalEmpId" name="employeeId" class="form-input" placeholder="e.g. FAC010" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="facultyModalName" name="name" class="form-input" placeholder="e.g. Dr. Priya Sharma" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <input type="text" id="facultyModalDept" name="department" class="form-input" placeholder="e.g. Computer Science and Engineering" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Designation *</label>
+                            <input type="text" id="facultyModalDesig" name="designation" class="form-input" placeholder="e.g. Associate Professor" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Specialization</label>
+                            <input type="text" id="facultyModalSpec" name="specialization" class="form-input" placeholder="e.g. Data Science &amp; Cloud" />
+                        </div>
+                        <div class="form-group">
+                            <label>Experience (Years)</label>
+                            <input type="number" id="facultyModalExp" name="experienceYears" class="form-input" value="8" min="0" />
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="facultyModalEmail" name="email" class="form-input" placeholder="e.g. priya.sharma@college.edu" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="facultyModalPhone" name="phoneNumber" class="form-input" placeholder="e.g. 9800000010" />
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="facultyModalStatus" name="status" class="form-select">
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-close-modal="facultyModal">Cancel</button>
+                    <button type="submit" id="btnSaveFaculty" class="btn-primary">
+                        <span>💾</span> Save Faculty Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: ACTIVITY CREATE / EDIT MODAL                                 -->
+    <!-- ===================================================================== -->
+    <div id="activityModal" class="modal-backdrop">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div id="activityModalTitle" class="modal-title">
+                    <span>📅</span> Schedule Curriculum Activity
+                </div>
+                <button type="button" class="modal-close-btn" data-close-modal="activityModal">&times;</button>
+            </div>
+            <form id="activityModalForm">
+                <input type="hidden" id="activityModalId" name="id" />
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                        <div class="form-group">
+                            <label>Activity Code *</label>
+                            <input type="text" id="activityModalCode" name="activityCode" class="form-input" placeholder="e.g. ACT-CS508-SEM" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Activity Title *</label>
+                            <input type="text" id="activityModalTitleInput" name="title" class="form-input" placeholder="e.g. Advanced Cloud Computing Seminar" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Activity Type *</label>
+                            <select id="activityModalType" name="activityType" class="form-select" required>
+                                <option value="WORKSHOP">WORKSHOP</option>
+                                <option value="LAB">LAB</option>
+                                <option value="LECTURE">LECTURE</option>
+                                <option value="SEMINAR">SEMINAR</option>
+                                <option value="EVENT">EVENT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <input type="text" id="activityModalDept" name="department" class="form-input" placeholder="e.g. Computer Science and Engineering" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Faculty Coordinator ID</label>
+                            <input type="number" id="activityModalFacultyId" name="facultyId" class="form-input" value="1" placeholder="Faculty database ID" />
+                        </div>
+                        <div class="form-group">
+                            <label>Academic Year</label>
+                            <input type="text" id="activityModalYear" name="academicYear" class="form-input" value="2025-2026" />
+                        </div>
+                        <div class="form-group">
+                            <label>Semester (1-8)</label>
+                            <input type="number" id="activityModalSemester" name="semester" class="form-input" value="5" min="1" max="8" />
+                        </div>
+                        <div class="form-group">
+                            <label>Credits</label>
+                            <input type="number" id="activityModalCredits" name="credits" class="form-input" value="3" min="0" max="10" />
+                        </div>
+                        <div class="form-group">
+                            <label>Max Enrollment</label>
+                            <input type="number" id="activityModalMaxEnroll" name="maxEnrollment" class="form-input" value="60" min="1" />
+                        </div>
+                        <div class="form-group">
+                            <label>Venue</label>
+                            <input type="text" id="activityModalVenue" name="venue" class="form-input" placeholder="e.g. Seminar Hall 2" />
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="activityModalStatus" name="status" class="form-select">
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="UPCOMING">UPCOMING</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>Description &amp; Syllabus</label>
+                        <textarea id="activityModalDesc" name="description" class="form-input" rows="3" placeholder="Provide syllabus overview and learning outcomes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-close-modal="activityModal">Cancel</button>
+                    <button type="submit" id="btnSaveActivity" class="btn-primary">
+                        <span>💾</span> Save Activity
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: CONFIRM DELETE MODAL                                         -->
+    <!-- ===================================================================== -->
+    <div id="confirmDeleteModal" class="modal-backdrop">
+        <div class="modal-dialog" style="max-width: 460px;">
+            <div class="modal-header">
+                <div class="modal-title" style="color: #fb7185;">
+                    <span>⚠️</span> Confirm Deletion
+                </div>
+                <button type="button" class="modal-close-btn" data-close-modal="confirmDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteModalMessage" style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
+                    Are you sure you want to delete this record? This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-close-modal="confirmDeleteModal">Cancel</button>
+                <button type="button" id="btnExecuteDelete" class="action-btn delete" style="padding: 10px 20px; font-size: 0.92rem;">
+                    <span>🗑️</span> Delete Permanently
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <footer class="portal-footer">
+        Smart Curriculum Activity &amp; Attendance Web Portal &bull; Day 17 Milestone: Admin Dashboard &amp; Centralized Controls &bull; Java 21 &amp; Spring Boot 3.2.5
+    </footer>
+
     <script src="/js/app.js"></script>
 </body>
 </html>

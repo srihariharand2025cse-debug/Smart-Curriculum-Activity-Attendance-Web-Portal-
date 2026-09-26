@@ -1113,8 +1113,971 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // =========================================================================
+    // 3. ADMIN DASHBOARD MODULE (Day 17)
+    // =========================================================================
+    const initAdminDashboard = () => {
+        const kpiStudents = document.getElementById('kpiAdminStudents');
+        if (!kpiStudents) return; // Not on Admin Dashboard
+
+        let adminStats = null;
+        let cachedStudents = [];
+        let cachedFaculty = [];
+        let cachedActivities = [];
+        let cachedAttendance = [];
+        let deleteActionCallback = null;
+
+        // Modal Helpers
+        const openModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        };
+
+        const closeModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        };
+
+        // Attach close modal events
+        document.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetModal = btn.getAttribute('data-close-modal');
+                closeModal(targetModal);
+            });
+        });
+
+        // Tab Switching
+        const tabBtns = document.querySelectorAll('.dashboard-tabs .tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTabId = btn.getAttribute('data-tab');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+                btn.classList.add('active');
+                const targetContent = document.getElementById(targetTabId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // ---------------------------------------------------------------------
+        // 3.1 Load Centralized Admin Stats
+        // ---------------------------------------------------------------------
+        const loadAdminStats = async () => {
+            try {
+                const res = await fetch('/api/admin/stats');
+                if (!res.ok) throw new Error('Failed to fetch admin stats');
+                const json = await res.json();
+                adminStats = json.data;
+
+                // 1. KPI Cards
+                document.getElementById('kpiAdminStudents').innerText = adminStats.totalStudents;
+                document.getElementById('kpiAdminActiveStudents').innerText = `${adminStats.activeStudents} of ${adminStats.totalStudents}`;
+
+                document.getElementById('kpiAdminFaculty').innerText = adminStats.totalFaculty;
+                document.getElementById('kpiAdminActiveFaculty').innerText = `${adminStats.activeFaculty} Active`;
+
+                document.getElementById('kpiAdminActivities').innerText = adminStats.totalActivities;
+                document.getElementById('kpiAdminActiveActivities').innerText = `${adminStats.activeActivities} Active, ${adminStats.upcomingActivities} Upcoming`;
+
+                document.getElementById('kpiAdminAttendanceRate').innerText = `${adminStats.overallAttendancePercentage.toFixed(1)}%`;
+
+                // 2. Attendance Distribution Bar
+                const totalAtt = adminStats.totalAttendanceRecords;
+                document.getElementById('overviewAttTotalBadge').innerText = `${totalAtt} Total Records`;
+
+                if (totalAtt > 0) {
+                    const presentPct = ((adminStats.presentCount / totalAtt) * 100).toFixed(1);
+                    const odPct = ((adminStats.onDutyCount / totalAtt) * 100).toFixed(1);
+                    const absentPct = ((adminStats.absentCount / totalAtt) * 100).toFixed(1);
+
+                    document.getElementById('barSegmentPresent').style.width = `${presentPct}%`;
+                    document.getElementById('barSegmentOd').style.width = `${odPct}%`;
+                    document.getElementById('barSegmentAbsent').style.width = `${absentPct}%`;
+
+                    document.getElementById('overviewPresentVal').innerText = adminStats.presentCount;
+                    document.getElementById('overviewPresentPct').innerText = `${presentPct}%`;
+
+                    document.getElementById('overviewOdVal').innerText = adminStats.onDutyCount;
+                    document.getElementById('overviewOdPct').innerText = `${odPct}%`;
+
+                    document.getElementById('overviewAbsentVal').innerText = adminStats.absentCount;
+                    document.getElementById('overviewAbsentPct').innerText = `${absentPct}%`;
+                } else {
+                    document.getElementById('barSegmentPresent').style.width = '0%';
+                    document.getElementById('barSegmentOd').style.width = '0%';
+                    document.getElementById('barSegmentAbsent').style.width = '0%';
+                }
+
+                // 3. System & Database Health
+                if (adminStats.databaseConnected) {
+                    document.getElementById('adminDbStatusText').innerText = 'CONNECTED & HEALTHY';
+                    document.getElementById('healthDbEngine').innerText = adminStats.databaseProductName || 'MySQL Database Server';
+                } else {
+                    document.getElementById('adminDbStatusText').innerText = 'DISCONNECTED';
+                    document.getElementById('healthDbEngine').innerText = 'Connection Unavailable';
+                }
+                document.getElementById('healthServerTime').innerText = new Date(adminStats.serverTimestamp).toLocaleString();
+
+                // 4. Department Distribution Cards
+                renderDepartmentStats(adminStats.studentsByDepartment, adminStats.facultyByDepartment);
+
+                // 5. Activity Type Distribution Cards
+                renderActivityTypeStats(adminStats.activitiesByType);
+
+            } catch (err) {
+                console.error('Error loading admin stats:', err);
+                showToast('Could not load administrative stats: ' + err.message, 'error');
+            }
+        };
+
+        const renderDepartmentStats = (studentDepts, facultyDepts) => {
+            const container = document.getElementById('departmentStatsContainer');
+            if (!container) return;
+
+            const allDeptKeys = new Set([
+                ...Object.keys(studentDepts || {}),
+                ...Object.keys(facultyDepts || {})
+            ]);
+
+            if (allDeptKeys.size === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); padding: 12px;">No department records logged.</div>';
+                return;
+            }
+
+            container.innerHTML = Array.from(allDeptKeys).map(dept => {
+                const sCount = (studentDepts && studentDepts[dept]) || 0;
+                const fCount = (facultyDepts && facultyDepts[dept]) || 0;
+                return `
+                    <div class="dept-stat-card">
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">${dept}</div>
+                            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">Academic Department</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.88rem; color: #60a5fa; font-weight: 600;">👥 ${sCount} Students</div>
+                            <div style="font-size: 0.82rem; color: #c084fc; font-weight: 600; margin-top: 2px;">👨‍🏫 ${fCount} Faculty</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        const renderActivityTypeStats = (typeCounts) => {
+            const container = document.getElementById('activityTypeStatsContainer');
+            if (!container) return;
+
+            const entries = Object.entries(typeCounts || {});
+            if (entries.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); padding: 12px;">No activity categories logged.</div>';
+                return;
+            }
+
+            const icons = { WORKSHOP: '🛠️', LAB: '🧪', LECTURE: '📖', SEMINAR: '🎤', EVENT: '🏆' };
+
+            container.innerHTML = entries.map(([type, count]) => {
+                const icon = icons[type] || '📚';
+                return `
+                    <div class="dept-stat-card">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.3rem;">${icon}</span>
+                            <div>
+                                <div style="font-weight: 700; color: #fff; font-size: 0.92rem;">${type}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Curriculum Track</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; font-size: 0.9rem;">
+                                ${count} Activities
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // ---------------------------------------------------------------------
+        // 3.2 Student Management (Full CRUD)
+        // ---------------------------------------------------------------------
+        const loadStudents = async () => {
+            try {
+                const res = await fetch('/api/students');
+                if (!res.ok) throw new Error('Failed to load students');
+                const json = await res.json();
+                cachedStudents = json.data || [];
+                populateStudentDeptFilter();
+                renderStudentTable();
+            } catch (err) {
+                showToast('Error loading students: ' + err.message, 'error');
+            }
+        };
+
+        const populateStudentDeptFilter = () => {
+            const deptFilter = document.getElementById('studentDeptFilter');
+            if (!deptFilter) return;
+            const currentVal = deptFilter.value;
+            const depts = Array.from(new Set(cachedStudents.map(s => s.department).filter(Boolean)));
+            deptFilter.innerHTML = '<option value="ALL">All Departments</option>' +
+                depts.map(d => `<option value="${d}">${d}</option>`).join('');
+            if (depts.includes(currentVal)) deptFilter.value = currentVal;
+        };
+
+        const renderStudentTable = () => {
+            const tbody = document.getElementById('adminStudentTableBody');
+            const countBadge = document.getElementById('studentTableCountBadge');
+            if (!tbody) return;
+
+            const search = (document.getElementById('studentSearchInput')?.value || '').toLowerCase().trim();
+            const dept = document.getElementById('studentDeptFilter')?.value || 'ALL';
+            const year = document.getElementById('studentYearFilter')?.value || 'ALL';
+            const status = document.getElementById('studentStatusFilter')?.value || 'ALL';
+
+            const filtered = cachedStudents.filter(s => {
+                const matchSearch = !search ||
+                    (s.rollNumber && s.rollNumber.toLowerCase().includes(search)) ||
+                    (s.name && s.name.toLowerCase().includes(search)) ||
+                    (s.email && s.email.toLowerCase().includes(search));
+                const matchDept = dept === 'ALL' || s.department === dept;
+                const matchYear = year === 'ALL' || String(s.yearOfStudy) === year;
+                const matchStatus = status === 'ALL' || s.status === status;
+                return matchSearch && matchDept && matchYear && matchStatus;
+            });
+
+            if (countBadge) countBadge.innerText = `Showing ${filtered.length} of ${cachedStudents.length} Students`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            No students match the current filters.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => {
+                const statusBadge = s.status === 'ACTIVE'
+                    ? '<span class="status-pill present">ACTIVE</span>'
+                    : '<span class="status-pill absent">INACTIVE</span>';
+
+                return `
+                    <tr>
+                        <td><strong style="color: #93c5fd;">${s.rollNumber}</strong></td>
+                        <td><span style="font-weight: 600; color: #fff;">${s.name}</span></td>
+                        <td>${s.department}</td>
+                        <td>Year ${s.yearOfStudy || 1}${s.section ? ` (${s.section})` : ''}</td>
+                        <td style="color: var(--text-muted);">${s.email || '—'}</td>
+                        <td style="color: var(--text-muted);">${s.phoneNumber || '—'}</td>
+                        <td>${statusBadge}</td>
+                        <td style="text-align: center;">
+                            <div class="admin-table-actions" style="justify-content: center;">
+                                <button type="button" class="action-btn edit" data-edit-student="${s.id}">
+                                    <span>✏️</span> Edit
+                                </button>
+                                <button type="button" class="action-btn delete" data-delete-student="${s.id}" data-roll="${s.rollNumber}">
+                                    <span>🗑️</span> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Attach action listeners
+            tbody.querySelectorAll('[data-edit-student]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const studentId = Number(btn.getAttribute('data-edit-student'));
+                    const student = cachedStudents.find(s => s.id === studentId);
+                    if (student) openEditStudentModal(student);
+                });
+            });
+
+            tbody.querySelectorAll('[data-delete-student]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const studentId = Number(btn.getAttribute('data-delete-student'));
+                    const roll = btn.getAttribute('data-roll');
+                    confirmDeleteAction(`Are you sure you want to delete student "${roll}"? All associated attendance logs will be removed.`, async () => {
+                        try {
+                            const res = await fetch(`/api/students/${studentId}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                showToast(`Student ${roll} deleted successfully`, 'success');
+                                loadStudents();
+                                loadAdminStats();
+                            } else {
+                                const json = await res.json();
+                                showToast(json.message || 'Failed to delete student', 'error');
+                            }
+                        } catch (err) {
+                            showToast('Error deleting student: ' + err.message, 'error');
+                        }
+                    });
+                });
+            });
+        };
+
+        const openAddStudentModal = () => {
+            const form = document.getElementById('studentModalForm');
+            if (form) form.reset();
+            document.getElementById('studentModalId').value = '';
+            document.getElementById('studentModalTitle').innerHTML = '<span>🎓</span> Register New Student';
+            openModal('studentModal');
+        };
+
+        const openEditStudentModal = (student) => {
+            document.getElementById('studentModalId').value = student.id;
+            document.getElementById('studentModalRoll').value = student.rollNumber || '';
+            document.getElementById('studentModalName').value = student.name || '';
+            document.getElementById('studentModalDept').value = student.department || '';
+            document.getElementById('studentModalYear').value = student.yearOfStudy || 1;
+            document.getElementById('studentModalSection').value = student.section || 'A';
+            document.getElementById('studentModalStatus').value = student.status || 'ACTIVE';
+            document.getElementById('studentModalEmail').value = student.email || '';
+            document.getElementById('studentModalPhone').value = student.phoneNumber || '';
+            document.getElementById('studentModalTitle').innerHTML = `<span>✏️</span> Edit Student: ${student.rollNumber}`;
+            openModal('studentModal');
+        };
+
+        // Student Form Submit
+        const studentForm = document.getElementById('studentModalForm');
+        if (studentForm) {
+            studentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('studentModalId').value;
+                const payload = {
+                    rollNumber: document.getElementById('studentModalRoll').value.trim(),
+                    name: document.getElementById('studentModalName').value.trim(),
+                    department: document.getElementById('studentModalDept').value.trim(),
+                    yearOfStudy: Number(document.getElementById('studentModalYear').value),
+                    section: document.getElementById('studentModalSection').value.trim(),
+                    status: document.getElementById('studentModalStatus').value,
+                    email: document.getElementById('studentModalEmail').value.trim(),
+                    phoneNumber: document.getElementById('studentModalPhone').value.trim()
+                };
+
+                const url = id ? `/api/students/${id}` : '/api/students';
+                const method = id ? 'PUT' : 'POST';
+
+                try {
+                    const res = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const json = await res.json();
+                    if (res.ok) {
+                        showToast(`Student ${payload.rollNumber} saved successfully!`, 'success');
+                        closeModal('studentModal');
+                        loadStudents();
+                        loadAdminStats();
+                    } else {
+                        showToast(json.message || 'Error saving student record', 'error');
+                    }
+                } catch (err) {
+                    showToast('Network error: ' + err.message, 'error');
+                }
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // 3.3 Faculty Management (Full CRUD)
+        // ---------------------------------------------------------------------
+        const loadFaculty = async () => {
+            try {
+                const res = await fetch('/api/faculty');
+                if (!res.ok) throw new Error('Failed to load faculty');
+                const json = await res.json();
+                cachedFaculty = json.data || [];
+                populateFacultyFilters();
+                renderFacultyTable();
+            } catch (err) {
+                showToast('Error loading faculty: ' + err.message, 'error');
+            }
+        };
+
+        const populateFacultyFilters = () => {
+            const deptFilter = document.getElementById('facultyDeptFilter');
+            const desigFilter = document.getElementById('facultyDesigFilter');
+            if (deptFilter) {
+                const depts = Array.from(new Set(cachedFaculty.map(f => f.department).filter(Boolean)));
+                deptFilter.innerHTML = '<option value="ALL">All Departments</option>' +
+                    depts.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+            if (desigFilter) {
+                const desigs = Array.from(new Set(cachedFaculty.map(f => f.designation).filter(Boolean)));
+                desigFilter.innerHTML = '<option value="ALL">All Designations</option>' +
+                    desigs.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+        };
+
+        const renderFacultyTable = () => {
+            const tbody = document.getElementById('adminFacultyTableBody');
+            const countBadge = document.getElementById('facultyTableCountBadge');
+            if (!tbody) return;
+
+            const search = (document.getElementById('facultySearchInput')?.value || '').toLowerCase().trim();
+            const dept = document.getElementById('facultyDeptFilter')?.value || 'ALL';
+            const desig = document.getElementById('facultyDesigFilter')?.value || 'ALL';
+            const status = document.getElementById('facultyStatusFilter')?.value || 'ALL';
+
+            const filtered = cachedFaculty.filter(f => {
+                const matchSearch = !search ||
+                    (f.employeeId && f.employeeId.toLowerCase().includes(search)) ||
+                    (f.name && f.name.toLowerCase().includes(search)) ||
+                    (f.email && f.email.toLowerCase().includes(search));
+                const matchDept = dept === 'ALL' || f.department === dept;
+                const matchDesig = desig === 'ALL' || f.designation === desig;
+                const matchStatus = status === 'ALL' || f.status === status;
+                return matchSearch && matchDept && matchDesig && matchStatus;
+            });
+
+            if (countBadge) countBadge.innerText = `Showing ${filtered.length} of ${cachedFaculty.length} Faculty Members`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            No faculty members match the current filters.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(f => {
+                const statusBadge = f.status === 'ACTIVE'
+                    ? '<span class="status-pill present">ACTIVE</span>'
+                    : '<span class="status-pill absent">INACTIVE</span>';
+
+                return `
+                    <tr>
+                        <td><strong style="color: #c084fc;">${f.employeeId}</strong></td>
+                        <td><span style="font-weight: 600; color: #fff;">${f.name}</span></td>
+                        <td>${f.department}</td>
+                        <td style="color: #60a5fa;">${f.designation}</td>
+                        <td style="color: var(--text-muted);">${f.email}</td>
+                        <td style="color: var(--text-muted);">${f.phoneNumber || '—'}</td>
+                        <td>${f.experienceYears ? `${f.experienceYears} yrs` : '—'}</td>
+                        <td>${statusBadge}</td>
+                        <td style="text-align: center;">
+                            <div class="admin-table-actions" style="justify-content: center;">
+                                <button type="button" class="action-btn edit" data-edit-faculty="${f.id}">
+                                    <span>✏️</span> Edit
+                                </button>
+                                <button type="button" class="action-btn delete" data-delete-faculty="${f.id}" data-empid="${f.employeeId}">
+                                    <span>🗑️</span> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Attach action listeners
+            tbody.querySelectorAll('[data-edit-faculty]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const facultyId = Number(btn.getAttribute('data-edit-faculty'));
+                    const faculty = cachedFaculty.find(f => f.id === facultyId);
+                    if (faculty) openEditFacultyModal(faculty);
+                });
+            });
+
+            tbody.querySelectorAll('[data-delete-faculty]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const facultyId = Number(btn.getAttribute('data-delete-faculty'));
+                    const empId = btn.getAttribute('data-empid');
+                    confirmDeleteAction(`Are you sure you want to delete faculty member "${empId}"?`, async () => {
+                        try {
+                            const res = await fetch(`/api/faculty/${facultyId}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                showToast(`Faculty ${empId} deleted successfully`, 'success');
+                                loadFaculty();
+                                loadAdminStats();
+                            } else {
+                                const json = await res.json();
+                                showToast(json.message || 'Failed to delete faculty member', 'error');
+                            }
+                        } catch (err) {
+                            showToast('Error deleting faculty: ' + err.message, 'error');
+                        }
+                    });
+                });
+            });
+        };
+
+        const openAddFacultyModal = () => {
+            const form = document.getElementById('facultyModalForm');
+            if (form) form.reset();
+            document.getElementById('facultyModalId').value = '';
+            document.getElementById('facultyModalTitle').innerHTML = '<span>👨‍🏫</span> Add Faculty Member';
+            openModal('facultyModal');
+        };
+
+        const openEditFacultyModal = (faculty) => {
+            document.getElementById('facultyModalId').value = faculty.id;
+            document.getElementById('facultyModalEmpId').value = faculty.employeeId || '';
+            document.getElementById('facultyModalName').value = faculty.name || '';
+            document.getElementById('facultyModalDept').value = faculty.department || '';
+            document.getElementById('facultyModalDesig').value = faculty.designation || '';
+            document.getElementById('facultyModalSpec').value = faculty.specialization || '';
+            document.getElementById('facultyModalExp').value = faculty.experienceYears || 0;
+            document.getElementById('facultyModalEmail').value = faculty.email || '';
+            document.getElementById('facultyModalPhone').value = faculty.phoneNumber || '';
+            document.getElementById('facultyModalStatus').value = faculty.status || 'ACTIVE';
+            document.getElementById('facultyModalTitle').innerHTML = `<span>✏️</span> Edit Faculty: ${faculty.employeeId}`;
+            openModal('facultyModal');
+        };
+
+        // Faculty Form Submit
+        const facultyForm = document.getElementById('facultyModalForm');
+        if (facultyForm) {
+            facultyForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('facultyModalId').value;
+                const payload = {
+                    employeeId: document.getElementById('facultyModalEmpId').value.trim(),
+                    name: document.getElementById('facultyModalName').value.trim(),
+                    department: document.getElementById('facultyModalDept').value.trim(),
+                    designation: document.getElementById('facultyModalDesig').value.trim(),
+                    specialization: document.getElementById('facultyModalSpec').value.trim(),
+                    experienceYears: Number(document.getElementById('facultyModalExp').value),
+                    email: document.getElementById('facultyModalEmail').value.trim(),
+                    phoneNumber: document.getElementById('facultyModalPhone').value.trim(),
+                    status: document.getElementById('facultyModalStatus').value
+                };
+
+                const url = id ? `/api/faculty/${id}` : '/api/faculty';
+                const method = id ? 'PUT' : 'POST';
+
+                try {
+                    const res = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const json = await res.json();
+                    if (res.ok) {
+                        showToast(`Faculty ${payload.employeeId} saved successfully!`, 'success');
+                        closeModal('facultyModal');
+                        loadFaculty();
+                        loadAdminStats();
+                    } else {
+                        showToast(json.message || 'Error saving faculty member', 'error');
+                    }
+                } catch (err) {
+                    showToast('Network error: ' + err.message, 'error');
+                }
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // 3.4 Activity Oversight & Management (Full CRUD)
+        // ---------------------------------------------------------------------
+        const loadActivities = async () => {
+            try {
+                const res = await fetch('/api/activities/list');
+                if (!res.ok) throw new Error('Failed to load activities');
+                cachedActivities = await res.json() || [];
+                populateActivityDeptFilter();
+                renderActivityTable();
+            } catch (err) {
+                showToast('Error loading activities: ' + err.message, 'error');
+            }
+        };
+
+        const populateActivityDeptFilter = () => {
+            const deptFilter = document.getElementById('activityDeptFilter');
+            if (!deptFilter) return;
+            const depts = Array.from(new Set(cachedActivities.map(a => a.department).filter(Boolean)));
+            deptFilter.innerHTML = '<option value="ALL">All Departments</option>' +
+                depts.map(d => `<option value="${d}">${d}</option>`).join('');
+        };
+
+        const renderActivityTable = () => {
+            const tbody = document.getElementById('adminActivityTableBody');
+            const countBadge = document.getElementById('activityTableCountBadge');
+            if (!tbody) return;
+
+            const search = (document.getElementById('activitySearchInput')?.value || '').toLowerCase().trim();
+            const dept = document.getElementById('activityDeptFilter')?.value || 'ALL';
+            const type = document.getElementById('activityTypeFilter')?.value || 'ALL';
+            const status = document.getElementById('activityStatusFilter')?.value || 'ALL';
+
+            const filtered = cachedActivities.filter(a => {
+                const matchSearch = !search ||
+                    (a.activityCode && a.activityCode.toLowerCase().includes(search)) ||
+                    (a.title && a.title.toLowerCase().includes(search));
+                const matchDept = dept === 'ALL' || a.department === dept;
+                const matchType = type === 'ALL' || a.activityType === type;
+                const matchStatus = status === 'ALL' || a.status === status;
+                return matchSearch && matchDept && matchType && matchStatus;
+            });
+
+            if (countBadge) countBadge.innerText = `Showing ${filtered.length} of ${cachedActivities.length} Activities`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            No activities match the current filters.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(a => {
+                return `
+                    <tr>
+                        <td><strong style="color: #93c5fd; font-family: monospace;">${a.activityCode}</strong></td>
+                        <td>
+                            <div style="font-weight: 600; color: #fff;">${a.title}</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">${a.venue || 'Campus Venue'}</div>
+                        </td>
+                        <td><span class="activity-card-type">${a.activityType}</span></td>
+                        <td>${a.department}</td>
+                        <td>${a.facultyName || `Faculty #${a.facultyId || 1}`}</td>
+                        <td style="color: #fbbf24; font-weight: 600;">${a.credits || 0} Credits</td>
+                        <td>${a.maxEnrollment || 60} Seats</td>
+                        <td>
+                            <select class="form-select" data-activity-status-select="${a.id}" style="padding: 4px 8px; font-size: 0.8rem; width: 120px;">
+                                <option value="ACTIVE" ${a.status === 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+                                <option value="UPCOMING" ${a.status === 'UPCOMING' ? 'selected' : ''}>UPCOMING</option>
+                                <option value="COMPLETED" ${a.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
+                            </select>
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="admin-table-actions" style="justify-content: center;">
+                                <button type="button" class="action-btn edit" data-edit-activity="${a.id}">
+                                    <span>✏️</span> Edit
+                                </button>
+                                <button type="button" class="action-btn delete" data-delete-activity="${a.id}" data-code="${a.activityCode}">
+                                    <span>🗑️</span> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Status dropdown change event
+            tbody.querySelectorAll('[data-activity-status-select]').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    const activityId = select.getAttribute('data-activity-status-select');
+                    const newStatus = e.target.value;
+                    try {
+                        const res = await fetch(`/api/admin/activities/${activityId}/status?status=${newStatus}`, {
+                            method: 'PUT'
+                        });
+                        if (res.ok) {
+                            showToast(`Status updated to ${newStatus}`, 'success');
+                            loadActivities();
+                            loadAdminStats();
+                        } else {
+                            showToast('Failed to update activity status', 'error');
+                        }
+                    } catch (err) {
+                        showToast('Error updating status: ' + err.message, 'error');
+                    }
+                });
+            });
+
+            // Edit Activity Button
+            tbody.querySelectorAll('[data-edit-activity]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const activityId = Number(btn.getAttribute('data-edit-activity'));
+                    const act = cachedActivities.find(a => a.id === activityId);
+                    if (act) openEditActivityModal(act);
+                });
+            });
+
+            // Delete Activity Button
+            tbody.querySelectorAll('[data-delete-activity]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const activityId = Number(btn.getAttribute('data-delete-activity'));
+                    const code = btn.getAttribute('data-code');
+                    confirmDeleteAction(`Are you sure you want to delete activity "${code}"?`, async () => {
+                        try {
+                            const res = await fetch(`/api/activities/${activityId}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                showToast(`Activity ${code} deleted successfully`, 'success');
+                                loadActivities();
+                                loadAdminStats();
+                            } else {
+                                showToast('Failed to delete activity', 'error');
+                            }
+                        } catch (err) {
+                            showToast('Error deleting activity: ' + err.message, 'error');
+                        }
+                    });
+                });
+            });
+        };
+
+        const openAddActivityModal = () => {
+            const form = document.getElementById('activityModalForm');
+            if (form) form.reset();
+            document.getElementById('activityModalId').value = '';
+            document.getElementById('activityModalTitle').innerHTML = '<span>📅</span> Schedule Curriculum Activity';
+            openModal('activityModal');
+        };
+
+        const openEditActivityModal = (act) => {
+            document.getElementById('activityModalId').value = act.id;
+            document.getElementById('activityModalCode').value = act.activityCode || '';
+            document.getElementById('activityModalTitleInput').value = act.title || '';
+            document.getElementById('activityModalType').value = act.activityType || 'WORKSHOP';
+            document.getElementById('activityModalDept').value = act.department || '';
+            document.getElementById('activityModalFacultyId').value = act.facultyId || 1;
+            document.getElementById('activityModalYear').value = act.academicYear || '2025-2026';
+            document.getElementById('activityModalSemester').value = act.semester || 5;
+            document.getElementById('activityModalCredits').value = act.credits || 3;
+            document.getElementById('activityModalMaxEnroll').value = act.maxEnrollment || 60;
+            document.getElementById('activityModalVenue').value = act.venue || '';
+            document.getElementById('activityModalStatus').value = act.status || 'ACTIVE';
+            document.getElementById('activityModalDesc').value = act.description || '';
+            document.getElementById('activityModalTitle').innerHTML = `<span>✏️</span> Edit Activity: ${act.activityCode}`;
+            openModal('activityModal');
+        };
+
+        // Activity Form Submit
+        const activityForm = document.getElementById('activityModalForm');
+        if (activityForm) {
+            activityForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('activityModalId').value;
+                const payload = {
+                    activityCode: document.getElementById('activityModalCode').value.trim(),
+                    title: document.getElementById('activityModalTitleInput').value.trim(),
+                    activityType: document.getElementById('activityModalType').value,
+                    department: document.getElementById('activityModalDept').value.trim(),
+                    facultyId: Number(document.getElementById('activityModalFacultyId').value) || 1,
+                    academicYear: document.getElementById('activityModalYear').value.trim(),
+                    semester: Number(document.getElementById('activityModalSemester').value),
+                    credits: Number(document.getElementById('activityModalCredits').value),
+                    maxEnrollment: Number(document.getElementById('activityModalMaxEnroll').value),
+                    venue: document.getElementById('activityModalVenue').value.trim(),
+                    status: document.getElementById('activityModalStatus').value,
+                    description: document.getElementById('activityModalDesc').value.trim()
+                };
+
+                const url = id ? `/api/activities/${id}` : '/api/activities';
+                const method = id ? 'PUT' : 'POST';
+
+                try {
+                    const res = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const json = await res.json();
+                    if (res.ok) {
+                        showToast(`Activity "${payload.activityCode}" saved successfully!`, 'success');
+                        closeModal('activityModal');
+                        loadActivities();
+                        loadAdminStats();
+                    } else {
+                        showToast(json.message || 'Failed to save activity', 'error');
+                    }
+                } catch (err) {
+                    showToast('Network error: ' + err.message, 'error');
+                }
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // 3.5 Attendance Oversight & Inspection
+        // ---------------------------------------------------------------------
+        const loadAttendance = async () => {
+            try {
+                const res = await fetch('/api/attendance');
+                if (!res.ok) throw new Error('Failed to load attendance records');
+                const json = await res.json();
+                cachedAttendance = json.data || [];
+                renderAttendanceTable();
+            } catch (err) {
+                showToast('Error loading attendance logs: ' + err.message, 'error');
+            }
+        };
+
+        const renderAttendanceTable = () => {
+            const tbody = document.getElementById('adminAttendanceTableBody');
+            const countBadge = document.getElementById('attendanceTableCountBadge');
+            if (!tbody) return;
+
+            const rollSearch = (document.getElementById('attSearchRollInput')?.value || '').toLowerCase().trim();
+            const statusFilter = document.getElementById('attFilterStatus')?.value || 'ALL';
+
+            const filtered = cachedAttendance.filter(item => {
+                const matchRoll = !rollSearch ||
+                    (item.studentRollNumber && item.studentRollNumber.toLowerCase().includes(rollSearch)) ||
+                    (item.studentName && item.studentName.toLowerCase().includes(rollSearch));
+                const matchStatus = statusFilter === 'ALL' || item.status === statusFilter;
+                return matchRoll && matchStatus;
+            });
+
+            if (countBadge) countBadge.innerText = `Showing ${filtered.length} of ${cachedAttendance.length} Attendance Logs`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            No attendance records match the search criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                let statusBadge = '<span class="status-pill present">PRESENT</span>';
+                if (item.status === 'ABSENT') statusBadge = '<span class="status-pill absent">ABSENT</span>';
+                else if (item.status === 'ON_DUTY') statusBadge = '<span class="status-pill od">ON_DUTY</span>';
+
+                return `
+                    <tr>
+                        <td style="color: var(--text-dim); font-family: monospace;">#${item.id}</td>
+                        <td>${item.attendanceDate || '—'}</td>
+                        <td><strong style="color: #93c5fd;">${item.studentRollNumber || '—'}</strong></td>
+                        <td><span style="color: #fff; font-weight: 500;">${item.studentName || 'Student'}</span></td>
+                        <td><span class="activity-code-badge">${item.activityCode || 'ACT'}</span></td>
+                        <td style="color: var(--text-muted);">${item.sessionSlot || 'SESSION_1'}</td>
+                        <td>${statusBadge}</td>
+                        <td style="color: var(--text-muted);">${item.remarks || '—'}</td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        // Student Attendance Inspector
+        const btnInspect = document.getElementById('btnInspectStudent');
+        if (btnInspect) {
+            btnInspect.addEventListener('click', async () => {
+                const roll = document.getElementById('inspectorRollInput')?.value.trim();
+                if (!roll) {
+                    showToast('Please enter a roll number to inspect', 'warning');
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/attendance/student/roll/${encodeURIComponent(roll)}/summary`);
+                    if (!res.ok) throw new Error('Student not found or no attendance data');
+                    const json = await res.json();
+                    const summary = json.data;
+
+                    const resultsPanel = document.getElementById('inspectorResultsPanel');
+                    if (resultsPanel) resultsPanel.style.display = 'block';
+
+                    document.getElementById('inspStudentName').innerText = summary.studentName || roll;
+                    const pct = summary.overallAttendancePercentage || 0;
+                    document.getElementById('inspStudentPct').innerText = `${pct.toFixed(1)}%`;
+                    document.getElementById('inspStudentSessions').innerText = `${summary.attendedSessions} / ${summary.totalSessions}`;
+
+                    const tag = document.getElementById('inspStudentEligibilityTag');
+                    if (pct >= 75) {
+                        tag.className = 'eligibility-tag tag-eligible';
+                        tag.innerText = '✓ Good Standing (Exam Eligible)';
+                    } else if (pct >= 65) {
+                        tag.className = 'eligibility-tag tag-warning';
+                        tag.innerText = '⚠️ Condonation Needed (65-75%)';
+                    } else {
+                        tag.className = 'eligibility-tag tag-critical';
+                        tag.innerText = '⛔ Critical Shortage (<65%)';
+                    }
+
+                    showToast(`Loaded records for student ${roll}`, 'info');
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            });
+        }
+
+        // Delete Confirmation Helper
+        const confirmDeleteAction = (message, onConfirm) => {
+            const modal = document.getElementById('confirmDeleteModal');
+            const msgElem = document.getElementById('deleteModalMessage');
+            if (msgElem) msgElem.innerText = message;
+            deleteActionCallback = onConfirm;
+            openModal('confirmDeleteModal');
+        };
+
+        const btnExecDelete = document.getElementById('btnExecuteDelete');
+        if (btnExecDelete) {
+            btnExecDelete.addEventListener('click', () => {
+                if (deleteActionCallback) {
+                    deleteActionCallback();
+                    deleteActionCallback = null;
+                }
+                closeModal('confirmDeleteModal');
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // 3.6 Event Listeners & Filter Triggers
+        // ---------------------------------------------------------------------
+        // Student filters
+        ['studentSearchInput', 'studentDeptFilter', 'studentYearFilter', 'studentStatusFilter'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', renderStudentTable);
+            document.getElementById(id)?.addEventListener('change', renderStudentTable);
+        });
+        document.getElementById('btnOpenAddStudentModal')?.addEventListener('click', openAddStudentModal);
+
+        // Faculty filters
+        ['facultySearchInput', 'facultyDeptFilter', 'facultyDesigFilter', 'facultyStatusFilter'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', renderFacultyTable);
+            document.getElementById(id)?.addEventListener('change', renderFacultyTable);
+        });
+        document.getElementById('btnOpenAddFacultyModal')?.addEventListener('click', openAddFacultyModal);
+
+        // Activity filters
+        ['activitySearchInput', 'activityDeptFilter', 'activityTypeFilter', 'activityStatusFilter'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', renderActivityTable);
+            document.getElementById(id)?.addEventListener('change', renderActivityTable);
+        });
+        document.getElementById('btnOpenAddActivityModal')?.addEventListener('click', openAddActivityModal);
+
+        // Attendance filters
+        ['attSearchRollInput', 'attFilterStatus'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', renderAttendanceTable);
+            document.getElementById(id)?.addEventListener('change', renderAttendanceTable);
+        });
+        document.getElementById('btnRefreshAttendance')?.addEventListener('click', loadAttendance);
+
+        // Quick Operations
+        document.getElementById('btnQuickAddStudent')?.addEventListener('click', () => {
+            document.querySelector('.tab-btn[data-tab="tab-students"]')?.click();
+            openAddStudentModal();
+        });
+        document.getElementById('btnQuickAddFaculty')?.addEventListener('click', () => {
+            document.querySelector('.tab-btn[data-tab="tab-faculty"]')?.click();
+            openAddFacultyModal();
+        });
+        document.getElementById('btnQuickAddActivity')?.addEventListener('click', () => {
+            document.querySelector('.tab-btn[data-tab="tab-activities"]')?.click();
+            openAddActivityModal();
+        });
+        document.getElementById('btnRefreshAdminStats')?.addEventListener('click', () => {
+            loadAdminStats();
+            showToast('Refreshed administrative stats!', 'info');
+        });
+
+        // Initialize Admin Dashboard Data
+        loadAdminStats();
+        loadStudents();
+        loadFaculty();
+        loadActivities();
+        loadAttendance();
+    };
+
+    // =========================================================================
     // 4. INITIALIZATION
     // =========================================================================
     initStudentDashboard();
     initFacultyDashboard();
+    initAdminDashboard();
 });
