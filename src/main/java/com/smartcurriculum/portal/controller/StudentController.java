@@ -4,6 +4,7 @@ import com.smartcurriculum.portal.dto.ApiResponse;
 import com.smartcurriculum.portal.dto.StudentRequestDto;
 import com.smartcurriculum.portal.dto.StudentResponseDto;
 import com.smartcurriculum.portal.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -39,7 +40,7 @@ public class StudentController {
      * POST /api/students
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<StudentResponseDto>> createStudent(@RequestBody StudentRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<StudentResponseDto>> createStudent(@Valid @RequestBody StudentRequestDto requestDto) {
         StudentResponseDto created = studentService.createStudent(requestDto);
         return new ResponseEntity<>(ApiResponse.success("Student registered successfully", created), HttpStatus.CREATED);
     }
@@ -99,7 +100,7 @@ public class StudentController {
     @PutMapping("/{id:[0-9]+}")
     public ResponseEntity<ApiResponse<StudentResponseDto>> updateStudent(
             @PathVariable Long id,
-            @RequestBody StudentRequestDto requestDto) {
+            @Valid @RequestBody StudentRequestDto requestDto) {
         StudentResponseDto updated = studentService.updateStudent(id, requestDto);
         return ResponseEntity.ok(ApiResponse.success("Student updated successfully", updated));
     }

@@ -154,6 +154,23 @@ The application follows the enterprise Spring Boot layered architecture:
 
 ---
 
+## 🧪 Testing & Error Handling (Day 18)
+
+* **Comprehensive Test Suite**: 177 automated unit and integration tests passing across Repository, Service, and REST Controller layers.
+* **End-to-End Integration Testing**: Complete workflow verification (`SmartCurriculumPortalE2ETest`) covering student onboarding, faculty assignments, curriculum activity creation, attendance logging, percentage calculations, eligibility evaluations, and admin KPI statistics.
+* **Global Error Handling**: Centralized exception advice (`GlobalExceptionHandler`) delivering structured, standardized `ApiResponse<T>` error envelopes for:
+  - `ResourceNotFoundException` (`404 NOT_FOUND`)
+  - `DuplicateResourceException` & `DataIntegrityViolationException` (`409 CONFLICT`)
+  - `MethodArgumentNotValidException` (`400 BAD_REQUEST` with detailed field-level error mapping)
+  - `InvalidRequestException` & `IllegalArgumentException` (`400 BAD_REQUEST`)
+  - `MissingServletRequestParameterException` & `MethodArgumentTypeMismatchException` (`400 BAD_REQUEST`)
+  - `HttpMessageNotReadableException` (`400 BAD_REQUEST` for malformed JSON)
+  - `HttpRequestMethodNotSupportedException` (`405 METHOD_NOT_ALLOWED`)
+  - `NoResourceFoundException` (`404 NOT_FOUND` for unmapped static resources)
+* **Request Validation**: Jakarta Bean Validation (`@Valid`, `@NotBlank`, `@Email`, `@Size`, `@NotNull`, `@Min`, `@Max`) enforced across all DTOs and Controller endpoints.
+
+---
+
 ## 📅 20-Day Development Roadmap
 
 * **Day 1**: Software setup and project initialization. *(Completed)*
@@ -173,7 +190,7 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 15**: Implement Student Dashboard with attendance visual metrics. *(Completed)*
 * **Day 16**: Implement Faculty Dashboard for attendance & activity logging. *(Completed)*
 * **Day 17**: Implement Admin Dashboard with centralized stats and controls. *(Completed)*
-* **Day 18**: End-to-end testing, error handling, and bug fixing.
+* **Day 18**: End-to-end testing, error handling, and bug fixing. *(Completed)*
 * **Day 19**: Polish UI design, responsiveness, and user experience.
 * **Day 20**: Final verification, screenshots, project wrap-up, and release.
 

@@ -1,10 +1,12 @@
 package com.smartcurriculum.portal.controller;
 
+import com.smartcurriculum.portal.dto.ActivityResponseDto;
 import com.smartcurriculum.portal.dto.AdminStatsDto;
 import com.smartcurriculum.portal.dto.ApiResponse;
 import com.smartcurriculum.portal.entity.Activity;
 import com.smartcurriculum.portal.entity.Faculty;
 import com.smartcurriculum.portal.entity.Student;
+import com.smartcurriculum.portal.exception.InvalidRequestException;
 import com.smartcurriculum.portal.exception.ResourceNotFoundException;
 import com.smartcurriculum.portal.repository.ActivityRepository;
 import com.smartcurriculum.portal.repository.AttendanceRepository;
@@ -162,13 +164,18 @@ public class AdminController {
      * PUT /api/admin/activities/{id}/status?status=ACTIVE
      */
     @PutMapping("/activities/{id}/status")
-    public ResponseEntity<ApiResponse<Activity>> updateActivityStatus(
+    public ResponseEntity<ApiResponse<ActivityResponseDto>> updateActivityStatus(
             @PathVariable Long id,
             @RequestParam String status) {
+        if (status == null || status.isBlank()) {
+            throw new InvalidRequestException("Status parameter cannot be blank");
+        }
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with ID: " + id));
-        activity.setStatus(status.toUpperCase());
+        activity.setStatus(status.trim().toUpperCase());
         Activity updated = activityRepository.save(activity);
-        return ResponseEntity.ok(ApiResponse.success("Activity status updated successfully to " + status.toUpperCase(), updated));
+        return ResponseEntity.ok(ApiResponse.success(
+                "Activity status updated successfully to " + status.trim().toUpperCase(),
+                ActivityResponseDto.fromEntity(updated)));
     }
 }

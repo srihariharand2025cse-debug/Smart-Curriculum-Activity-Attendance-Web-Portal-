@@ -3,6 +3,7 @@ package com.smartcurriculum.portal.controller;
 import com.smartcurriculum.portal.dto.ActivityRequestDto;
 import com.smartcurriculum.portal.dto.ActivityResponseDto;
 import com.smartcurriculum.portal.service.ActivityService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class ActivityController {
 
     // Create activity
     @PostMapping
-    public ResponseEntity<ActivityResponseDto> createActivity(@RequestBody ActivityRequestDto requestDto) {
+    public ResponseEntity<ActivityResponseDto> createActivity(@Valid @RequestBody ActivityRequestDto requestDto) {
         ActivityResponseDto created = activityService.createActivity(requestDto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
@@ -88,7 +89,7 @@ public class ActivityController {
     // Update activity
     @PutMapping("/{id}")
     public ResponseEntity<ActivityResponseDto> updateActivity(@PathVariable Long id,
-                                                               @RequestBody ActivityRequestDto requestDto) {
+                                                               @Valid @RequestBody ActivityRequestDto requestDto) {
         ActivityResponseDto updated = activityService.updateActivity(id, requestDto);
         return ResponseEntity.ok(updated);
     }
