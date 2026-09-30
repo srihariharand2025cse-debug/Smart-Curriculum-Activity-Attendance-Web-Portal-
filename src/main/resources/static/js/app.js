@@ -2075,8 +2075,160 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // =========================================================================
-    // 4. INITIALIZATION
+    // 5. GLOBAL UX, MOBILE NAVIGATION & ACCESSIBILITY (Day 19)
     // =========================================================================
+    const initGlobalUX = () => {
+        // Mobile Hamburger Navigation Drawer
+        const navToggleBtn = document.getElementById('navToggleBtn');
+        const navLinks = document.getElementById('navLinks');
+        const navToggleIcon = document.getElementById('navToggleIcon');
+
+        if (navToggleBtn && navLinks) {
+            navToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navLinks.classList.toggle('nav-links-open');
+                if (navToggleIcon) {
+                    navToggleIcon.textContent = navLinks.classList.contains('nav-links-open') ? '✕' : '☰';
+                }
+            });
+
+            // Auto-close menu when clicking any nav link
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('nav-links-open');
+                    if (navToggleIcon) navToggleIcon.textContent = '☰';
+                });
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!navLinks.contains(e.target) && !navToggleBtn.contains(e.target)) {
+                    navLinks.classList.remove('nav-links-open');
+                    if (navToggleIcon) navToggleIcon.textContent = '☰';
+                }
+            });
+        }
+
+        // Floating Back-to-Top Button
+        const backToTopBtn = document.getElementById('btnBackToTop');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            });
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Global Keyboard Shortcuts (Escape to dismiss modals)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-backdrop').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+
+        // Copy-to-Clipboard Helpers
+        const copyTextToClipboard = (text, btnElement, successLabel = 'Copied!') => {
+            if (!navigator.clipboard) {
+                // Fallback for non-secure contexts
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast(`Copied "${text}" to clipboard`, 'success');
+                } catch (err) {
+                    showToast('Failed to copy text', 'error');
+                }
+                document.body.removeChild(textArea);
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = btnElement.innerHTML;
+                btnElement.innerHTML = `✓ ${successLabel}`;
+                btnElement.classList.add('copied');
+                setTimeout(() => {
+                    btnElement.innerHTML = originalHTML;
+                    btnElement.classList.remove('copied');
+                }, 2000);
+                showToast(`Copied "${text}" to clipboard`, 'success');
+            }).catch(() => {
+                showToast('Clipboard access was denied', 'error');
+            });
+        };
+
+        document.getElementById('btnCopyRoll')?.addEventListener('click', (e) => {
+            const roll = document.getElementById('headerRollNumber')?.textContent?.trim() || '';
+            if (roll) copyTextToClipboard(roll, e.currentTarget, 'Copied Roll!');
+        });
+
+        document.getElementById('btnCopyEmpId')?.addEventListener('click', (e) => {
+            const emp = document.getElementById('headerEmpId')?.textContent?.trim() || '';
+            if (emp) copyTextToClipboard(emp, e.currentTarget, 'Copied ID!');
+        });
+    };
+
+    // =========================================================================
+    // 6. PORTAL HUB STATS MODULE (index.html)
+    // =========================================================================
+    const initHubDashboard = () => {
+        const hubStudents = document.getElementById('hubTotalStudents');
+        if (!hubStudents) return; // Not on hub landing page
+
+        const fetchHubStats = async () => {
+            try {
+                // Try admin stats first
+                const res = await fetch('/api/admin/stats');
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json.success && json.data) {
+                        document.getElementById('hubTotalStudents').innerText = json.data.totalStudents ?? '0';
+                        document.getElementById('hubTotalFaculty').innerText = json.data.totalFaculty ?? '0';
+                        document.getElementById('hubTotalActivities').innerText = json.data.totalActivities ?? '0';
+                        document.getElementById('hubTotalAttendance').innerText = json.data.totalAttendance ?? '0';
+                        const statusElem = document.getElementById('hubSystemStatus');
+                        if (statusElem) statusElem.innerText = 'ONLINE & HEALTHY';
+                        return;
+                    }
+                }
+
+                // Fallback to /api/status
+                const statusRes = await fetch('/api/status');
+                if (statusRes.ok) {
+                    const sJson = await statusRes.json();
+                    if (sJson.success && sJson.data) {
+                        document.getElementById('hubTotalStudents').innerText = sJson.data.totalStudents ?? '0';
+                        document.getElementById('hubTotalFaculty').innerText = sJson.data.totalFaculty ?? '0';
+                        document.getElementById('hubTotalActivities').innerText = sJson.data.totalActivities ?? '0';
+                        document.getElementById('hubTotalAttendance').innerText = sJson.data.totalAttendance ?? '0';
+                    }
+                }
+            } catch (err) {
+                console.warn('Could not fetch live hub stats:', err);
+            }
+        };
+
+        document.getElementById('btnRefreshHubStats')?.addEventListener('click', () => {
+            fetchHubStats();
+            showToast('Refreshed live portal statistics!', 'info');
+        });
+
+        fetchHubStats();
+    };
+
+    // =========================================================================
+    // 7. INITIALIZATION
+    // =========================================================================
+    initGlobalUX();
+    initHubDashboard();
     initStudentDashboard();
     initFacultyDashboard();
     initAdminDashboard();

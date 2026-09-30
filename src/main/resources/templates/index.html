@@ -3,117 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Curriculum Activity & Attendance Portal - Day 9</title>
+    <title>Smart Curriculum Activity &amp; Attendance Web Portal</title>
+    <meta name="description" content="Next-generation academic portal for real-time attendance analytics, curriculum activity tracking, and institutional administration.">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+    <!-- Responsive Navigation Header -->
+    <nav class="nav-bar">
+        <a href="/home" class="nav-brand">
+            <div class="nav-logo-icon">🎓</div>
+            <span>Smart Curriculum Portal</span>
+        </a>
+        <button id="navToggleBtn" class="nav-toggle-btn" aria-label="Toggle navigation">
+            <span id="navToggleIcon">☰</span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="/home" class="nav-link active">Home Hub</a>
+            <a href="/student" class="nav-link">Student Dashboard</a>
+            <a href="/faculty" class="nav-link">Faculty Dashboard</a>
+            <a href="/admin" class="nav-link">Admin Dashboard</a>
+            <a href="/api/status" class="nav-link" target="_blank">API Health ↗</a>
+        </div>
+    </nav>
+
     <div class="container">
-        <div class="header-card">
-            <span class="badge">✓ Day 9 Milestone Completed</span>
-            <h1 class="portal-title">Smart Curriculum Activity & Attendance Web Portal</h1>
-            <p class="portal-subtitle">Day 9: Student CRUD Operations (Repository, Service, Controller)</p>
+        <!-- Hero Section -->
+        <div class="hub-hero">
+            <div class="hub-hero-badge">
+                <span class="pulse-dot"></span>
+                <span>Day 19 Milestone: Responsive UI &amp; Modern UX Polish</span>
+            </div>
+            <h1 class="hub-title">Smart Curriculum Activity &amp; Attendance Web Portal</h1>
+            <p class="hub-description">
+                A unified, full-stack academic platform delivering real-time student attendance visual metrics, 
+                faculty activity management, and centralized institutional administration.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                    🛡️ System: <strong id="hubSystemStatus">ONLINE &amp; HEALTHY</strong>
+                </span>
+                <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+                    ⚡ Spring Boot 3.2 + JPA + MySQL + REST
+                </span>
+                <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; border-color: rgba(139, 92, 246, 0.3);">
+                    📱 Fully Responsive &amp; Touch-Ready
+                </span>
+            </div>
+        </div>
 
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">REST Controller</div>
-                    <div class="stat-value">StudentController</div>
+        <!-- 3 Interactive Dashboard Launch Cards -->
+        <div class="hub-roles-grid">
+            <!-- Student Portal Card -->
+            <div class="hub-card card-student">
+                <div>
+                    <div class="hub-card-icon">🎓</div>
+                    <h2 class="hub-card-title">Student Dashboard</h2>
+                    <p class="hub-card-desc">
+                        Real-time attendance visual metrics, animated percentage gauge, curriculum activity participation, and examination eligibility tracking.
+                    </p>
+                    <ul class="hub-features-list">
+                        <li><span>✓</span> Dynamic circular attendance progress meter</li>
+                        <li><span>✓</span> 75% mandatory examination eligibility threshold</li>
+                        <li><span>✓</span> Detailed session attendance log &amp; filter</li>
+                        <li><span>✓</span> Quick attendance test simulator</li>
+                    </ul>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-label">Service Layer</div>
-                    <div class="stat-value">StudentServiceImpl</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">DTO Pattern</div>
-                    <div class="stat-value">Request / Response</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">CRUD Status</div>
-                    <div class="stat-value">Active &amp; Tested</div>
+                <div>
+                    <a href="/student" class="hub-card-btn">
+                        <span>Launch Student Portal</span>
+                        <span>→</span>
+                    </a>
                 </div>
             </div>
 
-            <div class="status-box">
-                ✓ Day 1: Software setup &amp; Spring Boot project initialization<br>
-                ✓ Day 2: GitHub repository connection &amp; tracking<br>
-                ✓ Day 3: Enterprise layered package structure<br>
-                ✓ Day 4: MySQL database connection &amp; HikariCP pool configuration<br>
-                ✓ Day 5: Student JPA Entity, ORM relational mapping &amp; StudentRepository<br>
-                ✓ Day 6: Faculty JPA Entity, ORM relational mapping &amp; FacultyRepository<br>
-                ✓ Day 7: Activity JPA Entity, ORM relational mapping &amp; ActivityRepository<br>
-                ✓ Day 8: Attendance JPA Entity, ORM relational mapping &amp; AttendanceRepository<br>
-                ✓ Day 9: Student CRUD REST APIs (Repository, Service, Controller &amp; Validation)
+            <!-- Faculty Portal Card -->
+            <div class="hub-card card-faculty">
+                <div>
+                    <div class="hub-card-icon">👨‍🏫</div>
+                    <h2 class="hub-card-title">Faculty Portal</h2>
+                    <p class="hub-card-desc">
+                        Schedule curriculum activities, log class session attendance, inspect department rosters, and review student attendance compliance.
+                    </p>
+                    <ul class="hub-features-list">
+                        <li><span>✓</span> Batch session attendance marking (Present/Absent/OD)</li>
+                        <li><span>✓</span> Curriculum activity scheduling &amp; assignment</li>
+                        <li><span>✓</span> Real-time roster search &amp; department filters</li>
+                        <li><span>✓</span> Session log inspection and instant statistics</li>
+                    </ul>
+                </div>
+                <div>
+                    <a href="/faculty" class="hub-card-btn">
+                        <span>Launch Faculty Portal</span>
+                        <span>→</span>
+                    </a>
+                </div>
             </div>
 
-            <h2 style="font-size: 1.25rem; color: #93c5fd; margin-top: 28px; margin-bottom: 8px;">📡 Day 9 Student REST API Endpoints</h2>
-            <div class="schema-table-wrapper">
+            <!-- Admin Portal Card -->
+            <div class="hub-card card-admin">
+                <div>
+                    <div class="hub-card-icon">🛡️</div>
+                    <h2 class="hub-card-title">Admin Control Center</h2>
+                    <p class="hub-card-desc">
+                        Centralized institutional oversight, student &amp; faculty record lifecycle management, activity approval workflows, and metrics.
+                    </p>
+                    <ul class="hub-features-list">
+                        <li><span>✓</span> 4 Key Performance Indicators (Students, Faculty, Activities, Attendance)</li>
+                        <li><span>✓</span> Complete CRUD operations with modal interfaces</li>
+                        <li><span>✓</span> Department-wise distribution breakdown</li>
+                        <li><span>✓</span> Activity status lifecycle &amp; attendance oversight</li>
+                    </ul>
+                </div>
+                <div>
+                    <a href="/admin" class="hub-card-btn">
+                        <span>Launch Admin Portal</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live KPI Overview Section -->
+        <div class="section-card" style="margin-bottom: 28px;">
+            <div class="section-header" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2 style="font-size: 1.25rem; font-family: var(--font-heading); color: #ffffff;">📊 Live Portal Metrics</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 2px;">Real-time database statistics connected via Spring Boot REST APIs</p>
+                    </div>
+                    <button id="btnRefreshHubStats" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">
+                        <span>🔄</span> Refresh Stats
+                    </button>
+                </div>
+            </div>
+
+            <div class="kpi-cards-grid">
+                <div class="kpi-card card-interactive">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Students Enrolled</span>
+                        <div class="kpi-icon blue">🎓</div>
+                    </div>
+                    <div id="hubTotalStudents" class="kpi-val">—</div>
+                    <div class="kpi-desc">Total active student records</div>
+                </div>
+
+                <div class="kpi-card card-interactive">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Faculty Staff</span>
+                        <div class="kpi-icon purple">👨‍🏫</div>
+                    </div>
+                    <div id="hubTotalFaculty" class="kpi-val">—</div>
+                    <div class="kpi-desc">Academic instructors registered</div>
+                </div>
+
+                <div class="kpi-card card-interactive">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Curriculum Activities</span>
+                        <div class="kpi-icon green">📅</div>
+                    </div>
+                    <div id="hubTotalActivities" class="kpi-val">—</div>
+                    <div class="kpi-desc">Lectures, Labs &amp; Seminars</div>
+                </div>
+
+                <div class="kpi-card card-interactive">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Attendance Entries</span>
+                        <div class="kpi-icon amber">📊</div>
+                    </div>
+                    <div id="hubTotalAttendance" class="kpi-val">—</div>
+                    <div class="kpi-desc">Logged session attendance records</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REST API Explorer & Quick Links -->
+        <div class="section-card" style="margin-bottom: 28px;">
+            <div class="section-header" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px; margin-bottom: 20px;">
+                <h2 style="font-size: 1.25rem; font-family: var(--font-heading); color: #ffffff;">📡 Core REST API Endpoints</h2>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 2px;">Standardized RESTful APIs delivering JSON responses wrapped in <code>ApiResponse&lt;T&gt;</code></p>
+            </div>
+
+            <div class="table-responsive">
                 <table class="schema-table">
                     <thead>
                         <tr>
-                            <th>HTTP Method</th>
+                            <th>Method</th>
                             <th>Endpoint Route</th>
-                            <th>Request Payload / Params</th>
+                            <th>Target Layer</th>
                             <th>Description</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="chip-type" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">POST</span></td>
-                            <td><code>/api/students</code></td>
-                            <td><code>StudentRequestDto</code> (JSON)</td>
-                            <td>Registers a new student record with uniqueness validation.</td>
-                        </tr>
-                        <tr>
                             <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
                             <td><code>/api/students</code></td>
-                            <td>Query: <code>department</code>, <code>yearOfStudy</code>, <code>status</code></td>
-                            <td>Retrieves all students or filtered by department / year / status.</td>
+                            <td><code>StudentController</code></td>
+                            <td>List all registered students with query filters</td>
+                            <td><a href="/api/students" target="_blank" class="copy-btn">Open ↗</a></td>
                         </tr>
                         <tr>
                             <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
-                            <td><code>/api/students/{id}</code></td>
-                            <td>Path Variable: <code>id</code> (Long)</td>
-                            <td>Fetches student details by primary database ID.</td>
+                            <td><code>/api/faculty</code></td>
+                            <td><code>FacultyController</code></td>
+                            <td>Retrieve all faculty members and assigned courses</td>
+                            <td><a href="/api/faculty" target="_blank" class="copy-btn">Open ↗</a></td>
                         </tr>
                         <tr>
                             <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
-                            <td><code>/api/students/roll/{rollNumber}</code></td>
-                            <td>Path Variable: <code>rollNumber</code> (String)</td>
-                            <td>Fetches student details by institutional roll number.</td>
+                            <td><code>/api/activities</code></td>
+                            <td><code>ActivityController</code></td>
+                            <td>List curriculum activities, schedules, and credits</td>
+                            <td><a href="/api/activities" target="_blank" class="copy-btn">Open ↗</a></td>
                         </tr>
                         <tr>
-                            <td><span class="chip-type" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">PUT</span></td>
-                            <td><code>/api/students/{id}</code></td>
-                            <td><code>StudentRequestDto</code> (JSON)</td>
-                            <td>Updates existing student information with duplicate checks.</td>
+                            <td><span class="chip-type" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">GET</span></td>
+                            <td><code>/api/attendance/summary</code></td>
+                            <td><code>AttendanceController</code></td>
+                            <td>Aggregated attendance metrics, rates, and statistics</td>
+                            <td><a href="/api/attendance/summary" target="_blank" class="copy-btn">Open ↗</a></td>
                         </tr>
                         <tr>
-                            <td><span class="chip-type" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">DELETE</span></td>
-                            <td><code>/api/students/{id}</code></td>
-                            <td>Path Variable: <code>id</code> (Long)</td>
-                            <td>Permanently deletes the student record.</td>
+                            <td><span class="chip-type" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">GET</span></td>
+                            <td><code>/api/admin/stats</code></td>
+                            <td><code>AdminController</code></td>
+                            <td>Centralized institutional dashboard statistics &amp; breakdown</td>
+                            <td><a href="/api/admin/stats" target="_blank" class="copy-btn">Open ↗</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="chip-type" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">GET</span></td>
+                            <td><code>/api/status</code></td>
+                            <td><code>HomeController</code></td>
+                            <td>System operational health and layer configuration state</td>
+                            <td><a href="/api/status" target="_blank" class="copy-btn">Open ↗</a></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="next-step-box">
-                <div>
-                    <strong>Upcoming Roadmap:</strong> Day 10 — Implement Faculty CRUD Operations (Repository, Service, Controller)
-                </div>
-                <span class="badge badge-next">Next Step</span>
+        <!-- 20-Day Roadmap Summary -->
+        <div class="section-card">
+            <div class="section-header" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px; margin-bottom: 16px;">
+                <h2 style="font-size: 1.25rem; font-family: var(--font-heading); color: #ffffff;">📅 20-Day Development Milestone Progress</h2>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 2px;">Track the architectural milestones completed from inception to production release.</p>
             </div>
 
-            <div class="api-links">
-                <a class="api-link-btn" href="/api/students" target="_blank">🎓 Student List API (/api/students)</a>
-                <a class="api-link-btn" href="/api/status" target="_blank">🌐 System Status API</a>
-                <a class="api-link-btn" href="/api/db-status" target="_blank">🗄️ Database Health API</a>
-                <a class="api-link-btn" href="/api/students/summary" target="_blank">📋 Student Summary API</a>
-                <a class="api-link-btn" href="/api/faculty/summary" target="_blank">👨‍🏫 Faculty Summary API</a>
-                <a class="api-link-btn" href="/api/activities/summary" target="_blank">📅 Activity Summary API</a>
-                <a class="api-link-btn" href="/api/attendance/summary" target="_blank">📊 Attendance Summary API</a>
+            <div class="stats-grid">
+                <div class="stat-item card-interactive">
+                    <div class="stat-label">Architecture</div>
+                    <div class="stat-value" style="font-size: 1.15rem; color: #34d399;">Spring Boot 3 + JPA</div>
+                    <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">Days 1 – 4</div>
+                </div>
+                <div class="stat-item card-interactive">
+                    <div class="stat-label">Domain Entities</div>
+                    <div class="stat-value" style="font-size: 1.15rem; color: #60a5fa;">Relational ORM</div>
+                    <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">Days 5 – 8</div>
+                </div>
+                <div class="stat-item card-interactive">
+                    <div class="stat-label">CRUD REST APIs</div>
+                    <div class="stat-value" style="font-size: 1.15rem; color: #a78bfa;">Student, Faculty, Activity</div>
+                    <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">Days 9 – 12</div>
+                </div>
+                <div class="stat-item card-interactive">
+                    <div class="stat-label">Portals &amp; UI Polish</div>
+                    <div class="stat-value" style="font-size: 1.15rem; color: #f59e0b;">Full Dashboards &amp; UX</div>
+                    <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">Days 13 – 19</div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Floating Back to Top Button -->
+    <button id="btnBackToTop" class="back-to-top-btn" title="Back to top" aria-label="Back to top">
+        ↑
+    </button>
+
+    <!-- Portal Footer -->
+    <footer class="portal-footer">
+        <p>© 2026 Smart Curriculum Activity &amp; Attendance Portal. Built with Spring Boot, JPA, MySQL &amp; Vanilla Web Technologies.</p>
+    </footer>
+
     <script src="/js/app.js"></script>
 </body>
 </html>

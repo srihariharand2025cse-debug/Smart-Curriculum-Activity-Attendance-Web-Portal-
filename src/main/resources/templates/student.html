@@ -9,18 +9,21 @@
 </head>
 <body>
 
-    <!-- Navigation Header -->
+    <!-- Responsive Navigation Header -->
     <nav class="nav-bar">
-        <a href="/" class="nav-brand">
+        <a href="/home" class="nav-brand">
             <div class="nav-logo-icon">🎓</div>
             <span>Smart Curriculum Portal</span>
         </a>
-        <div class="nav-links">
-            <a href="/" class="nav-link">Home</a>
+        <button id="navToggleBtn" class="nav-toggle-btn" aria-label="Toggle navigation">
+            <span id="navToggleIcon">☰</span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="/home" class="nav-link">Home Hub</a>
             <a href="/student" class="nav-link active">Student Dashboard</a>
-            <a href="/faculty" class="nav-link">Faculty</a>
-            <a href="/admin" class="nav-link">Admin</a>
-            <a href="/api/status" class="nav-link" target="_blank">API Health</a>
+            <a href="/faculty" class="nav-link">Faculty Dashboard</a>
+            <a href="/admin" class="nav-link">Admin Dashboard</a>
+            <a href="/api/status" class="nav-link" target="_blank">API Health ↗</a>
         </div>
     </nav>
 
@@ -28,9 +31,10 @@
         <!-- Hero Header -->
         <div class="header-card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                <span class="badge">✓ Day 15 – Student Attendance Visual Metrics</span>
-                <span id="activeStudentBadge" class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);">
+                <span class="badge">✓ Day 19 – UI Polish, Metrics &amp; Responsiveness</span>
+                <span id="activeStudentBadge" class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); display: inline-flex; align-items: center; gap: 8px;">
                     👤 Roll No: <strong id="headerRollNumber">21CSE001</strong>
+                    <button type="button" id="btnCopyRoll" class="copy-btn" title="Copy Roll Number">📋 Copy</button>
                 </span>
             </div>
             <h1 class="portal-title">Student Attendance Dashboard</h1>
@@ -289,8 +293,13 @@
     <!-- Toast Notification Container -->
     <div id="toast-container"></div>
 
+    <!-- Floating Back to Top Button -->
+    <button id="btnBackToTop" class="back-to-top-btn" title="Back to top" aria-label="Back to top">
+        ↑
+    </button>
+
     <footer class="portal-footer">
-        Smart Curriculum Activity & Attendance Web Portal &bull; Day 15 Milestone: Student Dashboard & Visual Metrics &bull; Java 21 & Spring Boot 3.2.5
+        Smart Curriculum Activity & Attendance Web Portal &bull; Day 19: Responsive UI &amp; Modern UX Polish &bull; Java 21 &amp; Spring Boot 3.2.5
     </footer>
 
     <script src="/js/app.js"></script>

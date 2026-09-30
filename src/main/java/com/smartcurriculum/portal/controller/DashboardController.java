@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DashboardController {
 
+    @GetMapping({"/home", "/portal"})
+    public String homePortal() {
+        return "index"; // resolves to index.html
+    }
+
     @GetMapping("/student")
     public String studentDashboard() {
         return "student"; // resolves to student.html
