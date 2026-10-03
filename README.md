@@ -47,9 +47,17 @@ In educational institutions, managing curriculum activities, tracking co-curricu
 ```text
 java project/
 ├── .gitignore
+├── CHANGELOG.md           # Full 20-day development log
+├── RELEASE_NOTES.md       # v1.0.0 release notes
 ├── mvnw / mvnw.cmd
-├── pom.xml
+├── pom.xml                # v1.0.0
 ├── README.md
+├── docs/
+│   └── screenshots/       # UI screenshots (Day 20)
+│       ├── 01_home_portal.jpg
+│       ├── 02_student_dashboard.jpg
+│       ├── 03_faculty_dashboard.jpg
+│       └── 04_admin_dashboard.jpg
 └── src/
     ├── main/
     │   ├── java/
@@ -220,7 +228,18 @@ The application follows the enterprise Spring Boot layered architecture:
 * **Day 17**: Implement Admin Dashboard with centralized stats and controls. *(Completed)*
 * **Day 18**: End-to-end testing, error handling, and bug fixing. *(Completed)*
 * **Day 19**: Polish UI design, responsiveness, and user experience. *(Completed)*
-* **Day 20**: Final verification, screenshots, project wrap-up, and release.
+* **Day 20**: Final verification, screenshots, project wrap-up, and release. *(Completed)*
+
+---
+
+## 📸 Screenshots
+
+| View | Preview |
+|:---|:---|
+| **Portal Hub** | `docs/screenshots/01_home_portal.jpg` |
+| **Student Dashboard** | `docs/screenshots/02_student_dashboard.jpg` |
+| **Faculty Dashboard** | `docs/screenshots/03_faculty_dashboard.jpg` |
+| **Admin Control Center** | `docs/screenshots/04_admin_dashboard.jpg` |
 
 ---
 
