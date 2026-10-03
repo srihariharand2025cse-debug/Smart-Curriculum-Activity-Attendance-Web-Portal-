@@ -39,11 +39,6 @@ public class HomeController {
     @Autowired(required = false)
     private AttendanceRepository attendanceRepository;
 
-    @GetMapping("/")
-    public String home() {
-        return "Welcome to Smart Curriculum Activity & Attendance Web Portal v1.0.0! All 20-day milestones completed — 181 tests passing. Portal is production-ready.";
-    }
-
     @GetMapping("/api/status")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getStatus() {
         Map<String, Object> statusData = new LinkedHashMap<>();

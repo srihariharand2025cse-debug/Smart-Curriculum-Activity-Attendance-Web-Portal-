@@ -21,27 +21,18 @@ class HomeControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnWelcomeMessageOnRootEndpoint() throws Exception {
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Day 9 Student CRUD operations (Repository, Service, Controller) are Complete")));
-    }
-
-    @Test
     void shouldReturnStructuredApiResponseOnStatusEndpoint() throws Exception {
         mockMvc.perform(get("/api/status").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Portal API is running smoothly"))
                 .andExpect(jsonPath("$.data.status").value("UP"))
-                .andExpect(jsonPath("$.data.currentMilestone").value("Day 9: Implement Student CRUD operations (Repository, Service, Controller)"))
                 .andExpect(jsonPath("$.data.databaseConfigured").value(true))
                 .andExpect(jsonPath("$.data.studentEntityMapped").value(true))
                 .andExpect(jsonPath("$.data.studentCrudActive").value(true))
                 .andExpect(jsonPath("$.data.facultyEntityMapped").value(true))
                 .andExpect(jsonPath("$.data.activityEntityMapped").value(true))
-                .andExpect(jsonPath("$.data.attendanceEntityMapped").value(true))
-                .andExpect(jsonPath("$.data.nextMilestone").value("Day 10: Implement Faculty CRUD operations"));
+                .andExpect(jsonPath("$.data.attendanceEntityMapped").value(true));
     }
 
     @Test

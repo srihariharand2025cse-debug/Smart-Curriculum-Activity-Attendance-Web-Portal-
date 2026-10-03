@@ -18,6 +18,13 @@ class DashboardControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    void testRootPortalView() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"));
+    }
+
+    @Test
     void testHomePortalView() throws Exception {
         mockMvc.perform(get("/home"))
                 .andExpect(status().isOk())
